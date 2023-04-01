@@ -1,3 +1,4 @@
-from seekr.db import DB
+from seekr.core import Seekr
 
-db = DB('data/companies.sqlite', 100)
+
+Seekr("data/companies.sqlite")
