@@ -1,4 +1,4 @@
-from seekr.core import Seekr
+from seekr import Seekr
 
 
 Seekr('data/companies.sqlite', 'companies')
