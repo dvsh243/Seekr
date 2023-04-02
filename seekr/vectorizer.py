@@ -1,77 +1,93 @@
 import collections
 import math
 
-class TfIdfVectorizer:
+class TfidfVectorizer:
+    
+    # take 'INC' for example,
+    # out of 100,000 documents, 'INC' shows up in 19375 of them
+    # therefore, IDF = 100,000 / 19375 = 5.161290
+    # IDF = log[base e](5.161290) = 1.64118
+
+    # now consider document 1, '!J INC',
+    # out of the 2 words in document 1, 'INC' is one of them,
+    # therefore, TF = 1 / 2 = 0.5
 
     def __init__(self) -> None:
-        self.corpus = ''
+        self.tfidf_matrix = []
+        self.totalDocs = 0
 
-
-    def fit_transform(self, corpus: list) -> None:
+    def fit_transform(self, corpus: list) -> list[list]:
         self.corpus = corpus
-        
-        IDF_map = self.get_IDF_map()
-        self.calculate_TfIdf(IDF_map)
-        
-        # for _ in corpus:
-            # for feature in _.split(' '):
-                # self.features.add(feature)
+        self.totalDocs = len(corpus)
 
-    
-    # def get_feature_names(self) -> list:
-        # return [feature for feature in self.features]
+        self.featureIdxMap = self.create_featureMap()
+        self.featureDocCnt = self.create_feature_doc_count()
 
+        self.create_tfidf_matrix()
 
-    # def __repr__(self) -> str:
-        # return f"<TfIdfVectorizer: {len(self.IDF_map)} features>"
+        return self.tfidf_matrix
     
 
-    def get_TF(self, target: str, document: str) -> float:
+    def create_featureMap(self) -> dict:
         """
-        TF: Term Frequency, which measures how frequently a term occurs 
-        in a document. Since every document is different in length, it is 
-        possible that a term would appear much more times in long documents 
-        than shorter ones. Thus, the term frequency is often divided by the document 
-        length (aka. the total number of terms in the document) as a way of normalization:
-        TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document).
+        Assigning a unique integer value to each feature to be assigned a column in tfidf_matrix.
         """
-        
-        target_freq = 0
-        terms = document.split(' ')
+        featureIdxMap = {}
 
-        for term in terms:
-            if term == target: target_freq += 1
-        
-        return target_freq / len(terms)
+        index = 0
+        for document in self.corpus:
+            for feature in document.split(' '):
+                if feature in featureIdxMap: continue
+                featureIdxMap[feature] = index
+                index += 1
 
+        return featureIdxMap
+    
 
-    def get_IDF_map(self) -> dict:
+    def create_feature_doc_count(self) -> dict:
         """
-        IDF: Inverse Document Frequency, which measures how important a term is. 
-        While computing TF, all terms are considered equally important. 
-        However it is known that certain terms, such as "is", "of", and "that", 
-        may appear a lot of times but have little importance. Thus we need to 
-        weigh down the frequent terms while scale up the rare ones, by computing the following:
-        IDF(t) = log_e(Total number of documents / Number of documents with term t in it).
+        Creating hashMap for feature mapped to number of documents it has been used in.
         """
-        IDF_map = collections.defaultdict(int) # {term: str -> docs: list}
+        featureDocCnt = collections.defaultdict(int)
 
         for document in self.corpus:
-            for term in document.split(' '):
-                IDF_map[term] += 1
+            seen = set()
 
-        return IDF_map
+            for feature in document.split(' '):
+                if feature in seen: continue
 
-    def calculate_TfIdf(self, IDF_map: dict):
-        self.featureMap = collections.defaultdict(list) # {doc -> list[ (term, tfidf) ]}
-
-        for docIdx, document in enumerate(self.corpus):
-            for term in document.split(' '):
-                
-                tf = self.get_TF(term, document)
-                idf = len(self.corpus) / IDF_map[term]
-                # idf = math.log(idf, 2.71828)
-
-                self.featureMap[docIdx].append( (term, tf * idf) )
+                featureDocCnt[feature] += 1
+                seen.add(feature)  # to avoid duplicate features in the same document
         
-        print(self.featureMap)
+        return featureDocCnt
+    
+
+    def get_featureCnt_of_doc(self, document) -> tuple[set, int]:
+    
+        featureCnt = collections.defaultdict(int)
+        totalFeatures = 0
+
+        for feature in document.split(' '):
+            featureCnt[feature] += 1
+            totalFeatures += 1
+
+        return {f: c for f, c in featureCnt.items()}, totalFeatures
+    
+
+    def create_tfidf_matrix(self) -> None:
+        
+        for document in self.corpus:
+            featureCnt, total = self.get_featureCnt_of_doc(document)
+
+            # tfidr_list = [0 for _ in range(len(self.featureIdxMap))]
+            tfidf_list = []
+
+            for feature in featureCnt:
+                tf = featureCnt[feature] / total
+                idf =  self.totalDocs / self.featureDocCnt[feature]
+                idf = math.log(idf, 2.718281)
+
+                # append (featureIndex, tfidf value)
+                tfidf_list.append( (self.featureIdxMap[feature], tf * idf) )
+        
+            self.tfidf_matrix.append(tfidf_list)

@@ -14,6 +14,10 @@ def ngrams(string, n=3):
     return [''.join(ngram) for ngram in ngrams]
 
 
+def word(string):
+    return string.split(' ')
+
+
 
 class Matrix:
 
