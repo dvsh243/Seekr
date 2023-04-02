@@ -1,6 +1,4 @@
 import sqlite3
-import re
-
 
 class DB:
 
