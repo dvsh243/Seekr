@@ -15,6 +15,5 @@ class Seekr:
     def vectorize(self, corpus: list) -> dict:
         
         vectorizer = TfIdfVectorizer()
+
         vectorizer.fit_transform(corpus)
-        vectorizer.create_feature_matrix()
-        vectorizer.show_feature_matrix()
