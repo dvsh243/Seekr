@@ -23,7 +23,8 @@ class TfidfVectorizer:
         self.featureIdxMap = self.create_featureMap()
         self.featureDocCnt = self.create_feature_doc_count()
 
-        self.create_tfidf_matrix()
+        min_val, max_val = self.create_tfidf_matrix()
+        self.normalize_matrix(min_val, max_val)
 
         return self.tfidf_matrix
     
@@ -74,7 +75,8 @@ class TfidfVectorizer:
         return {f: c for f, c in featureCnt.items()}, totalFeatures
     
 
-    def create_tfidf_matrix(self) -> None:
+    def create_tfidf_matrix(self) -> tuple[float, float]:
+        min_tfidf, max_tfidf = float('inf'), 0
         
         for document in self.corpus:
             featureCnt, total = self.get_featureCnt_of_doc(document)
@@ -88,6 +90,26 @@ class TfidfVectorizer:
                 idf = math.log(idf, 2.718281)
 
                 # append (featureIndex, tfidf value)
-                tfidf_list.append( (self.featureIdxMap[feature], tf * idf) )
+                tfidf_list.append( [self.featureIdxMap[feature], tf * idf] )
+
+                min_tfidf = min(min_tfidf, tf * idf); max_tfidf = max(max_tfidf, tf * idf)
         
             self.tfidf_matrix.append(tfidf_list)
+
+        return min_tfidf, max_tfidf
+    
+
+    def normalize_matrix(self, min_val: float = 0, max_val: float = 1) -> None:
+        """
+        list = [1, 9, 10],      min=1, max=10
+        list[0] = (1 - 1) / (10 - 1)
+        list[i] = (list[i] - min) / (max - min)
+        """
+
+        for i in range(len(self.tfidf_matrix)):
+            for j in range(len(self.tfidf_matrix[i])):
+            
+                self.tfidf_matrix[i][j][1] = (self.tfidf_matrix[i][j][1] - min_val) / (max_val - min_val)
+                # print(self.tfidf_matrix[i][j], end='  -  ')
+            
+            # print()
