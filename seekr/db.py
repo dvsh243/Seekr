@@ -2,12 +2,12 @@ import sqlite3
 
 class DB:
 
-    def __init__(self, location: str, tableName: str, maxLimit: int = 0) -> None:
+    def __init__(self, location: str, maxLimit: int = 0) -> None:
         self.words = []
 
-        conn = sqlite3.connect('data/companies.sqlite')
+        conn = sqlite3.connect(location)
 
-        cursor = conn.execute(f"select * from {tableName}")
+        cursor = conn.execute(f"select * from companies")
         
         if not maxLimit:
             for company in cursor.fetchall():

@@ -17,6 +17,8 @@ class TfidfVectorizer:
         self.totalDocs = 0
 
     def fit_transform(self, corpus: list) -> list[list]:
+        # need to add func analyzer dynamically instead of .split(' ')
+        
         self.corpus = corpus
         self.totalDocs = len(corpus)
 
@@ -24,7 +26,7 @@ class TfidfVectorizer:
         self.featureDocCnt = self.create_feature_doc_count()
 
         min_val, max_val = self.create_tfidf_matrix()
-        self.normalize_matrix(min_val, max_val)
+        # self.normalize_matrix(min_val, max_val)
 
         return self.tfidf_matrix
     
@@ -87,7 +89,7 @@ class TfidfVectorizer:
             for feature in featureCnt:
                 tf = featureCnt[feature] / total
                 idf =  self.totalDocs / self.featureDocCnt[feature]
-                idf = math.log(idf, 2.718281)
+                idf = math.log(idf)  # base e
 
                 # append (featureIndex, tfidf value)
                 tfidf_list.append( [self.featureIdxMap[feature], tf * idf] )

@@ -1,4 +1,4 @@
 from seekr import Seekr
 
 
-Seekr('data/companies.sqlite', 'companies')
+Seekr('data/companies.sqlite')
