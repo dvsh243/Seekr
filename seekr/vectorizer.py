@@ -88,7 +88,7 @@ class TfidfVectorizer:
 
             for feature in featureCnt:
                 tf = featureCnt[feature] / total
-                idf =  self.totalDocs / self.featureDocCnt[feature]
+                idf = self.totalDocs / self.featureDocCnt[feature]
                 idf = math.log(idf)  # base e
 
                 # append (featureIndex, tfidf value)
@@ -113,5 +113,19 @@ class TfidfVectorizer:
             
                 self.tfidf_matrix[i][j][1] = (self.tfidf_matrix[i][j][1] - min_val) / (max_val - min_val)
                 # print(self.tfidf_matrix[i][j], end='  -  ')
-            
             # print()
+
+
+    def create_target_tfidf(self, target: str) -> list[list]:
+        tfidf_list = []
+        
+        featureCnt, total = self.get_featureCnt_of_doc(target)
+
+        for feature in featureCnt:
+            tf = featureCnt[feature] / total
+            idf = self.totalDocs / self.featureDocCnt.get(feature, 1)
+            idf = math.log(idf)  # base e
+
+            tfidf_list.append( [self.featureIdxMap.get(feature, -1), tf * idf] )
+
+        return tfidf_list

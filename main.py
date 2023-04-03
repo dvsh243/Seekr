@@ -1,4 +1,5 @@
 from seekr import Seekr
 
 
-Seekr('data/companies.sqlite')
+seekr = Seekr('data/companies.sqlite')
+seekr.get_matches("!M INC")

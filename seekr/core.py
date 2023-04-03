@@ -1,5 +1,5 @@
 from seekr.db import DB
-from seekr.utils import cleanData
+from seekr.utils import cleanData, calculate_cosine_similarity
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
 
@@ -15,24 +15,23 @@ class Seekr:
 
     def vectorize(self, corpus: list) -> list[list[int, float]]:
         
-        vectorizer = TfidfVectorizer()
-        tfidf_matrix = vectorizer.fit_transform(
+        self.vectorizer = TfidfVectorizer()
+        tfidf_matrix = self.vectorizer.fit_transform(
             corpus = corpus,
             analyzer = whitespace
         )
 
-
-        for i in range(len(tfidf_matrix)):
-            if i > 10: break
-
-            print(vectorizer.analyze(corpus[i]))
-            print(tfidf_matrix[i], end='\n\n')
-        
-        target = '!J'
-        count = 0
-        for doc in self.corpus:
-            for feature in vectorizer.analyze(doc):
-                if feature == target: count += 1; break
-        print(f"feature '{target}' can be found in {count} / {len(self.corpus)} documents")
-
         return tfidf_matrix
+    
+    
+    def __repr__(self) -> str:
+        return "<Seekr Object>"
+    
+
+    def get_matches(self, target: str) -> list:
+        
+        print("target ->", target)
+        tfidf_list = self.vectorizer.create_target_tfidf(target)
+
+        print(self.vectorizer.analyze(target))
+        print(tfidf_list) 
