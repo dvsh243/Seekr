@@ -83,8 +83,8 @@ class TfidfVectorizer:
         for document in self.corpus:
             featureCnt, total = self.get_featureCnt_of_doc(document)
 
-            # tfidr_list = [0 for _ in range(len(self.featureIdxMap))]
-            tfidf_list = []
+            # tfidr_list = [0 for _ in range(len(self.featureIdxMap))]  # dense
+            tfidf_list = []  # CSR sparse matrix
 
             for feature in featureCnt:
                 tf = featureCnt[feature] / total

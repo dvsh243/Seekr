@@ -1,3 +1,3 @@
 # Seekr.
 
-A scalable text retrieval system.
+An in-memory fuzzy matching tool.
