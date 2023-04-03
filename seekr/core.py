@@ -1,6 +1,7 @@
 from seekr.db import DB
 from seekr.utils import cleanData
 from seekr.vectorizer import TfidfVectorizer
+from seekr.analyzers import whitespace
 
 
 class Seekr:
@@ -15,7 +16,10 @@ class Seekr:
     def vectorize(self, corpus: list) -> list[list[int, float]]:
         
         vectorizer = TfidfVectorizer()
-        tfidf_matrix = vectorizer.fit_transform(corpus)
+        tfidf_matrix = vectorizer.fit_transform(
+            corpus = corpus,
+            analyzer = whitespace
+        )
 
 
         for i in range(len(tfidf_matrix)):

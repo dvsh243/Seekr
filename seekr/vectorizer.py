@@ -16,9 +16,9 @@ class TfidfVectorizer:
         self.tfidf_matrix = []
         self.totalDocs = 0
 
-    def fit_transform(self, corpus: list) -> list[list]:
-        # need to add func analyzer dynamically instead of .split(' ')
+    def fit_transform(self, corpus: list, analyzer: callable) -> list[list]:
         
+        self.analyze: callable = analyzer
         self.corpus = corpus
         self.totalDocs = len(corpus)
 
@@ -39,7 +39,7 @@ class TfidfVectorizer:
 
         index = 0
         for document in self.corpus:
-            for feature in document.split(' '):
+            for feature in self.analyze(document):
                 if feature in featureIdxMap: continue
                 featureIdxMap[feature] = index
                 index += 1
@@ -56,7 +56,7 @@ class TfidfVectorizer:
         for document in self.corpus:
             seen = set()
 
-            for feature in document.split(' '):
+            for feature in self.analyze(document):
                 if feature in seen: continue
 
                 featureDocCnt[feature] += 1
@@ -70,7 +70,7 @@ class TfidfVectorizer:
         featureCnt = collections.defaultdict(int)
         totalFeatures = 0
 
-        for feature in document.split(' '):
+        for feature in self.analyze(document):
             featureCnt[feature] += 1
             totalFeatures += 1
 

@@ -8,26 +8,16 @@ def cleanData(words: list) -> list:
     return words
 
 
-def ngrams(string, n=3):
-    string = re.sub(r'[,-./]|\sBD',r'', string)
-    ngrams = zip(*[string[i:] for i in range(n)])
-    return [''.join(ngram) for ngram in ngrams]
 
+# class Matrix:
 
-def word(string):
-    return string.split(' ')
-
-
-
-class Matrix:
-
-    def __init__(self, matrix: list[list]):
-        self.matrix = matrix
+#     def __init__(self, matrix: list[list]):
+#         self.matrix = matrix
 
     
-    def to_csr(self):
-        pass
+#     def to_csr(self):
+#         pass
     
-    def to_dense(self):
-        pass
+#     def to_dense(self):
+#         pass
         
