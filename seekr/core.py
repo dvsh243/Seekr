@@ -1,4 +1,5 @@
 from seekr.db import DB
+from seekr.csv import CSV
 from seekr.utils import cleanData, calculate_cosine_similarity
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
@@ -8,7 +9,8 @@ import time
 class Seekr:
 
     def __init__(self) -> None:
-        pass
+        self.raw_corpus: list[list] = []
+        self.corpus: list = []
 
 
     def load_from_db(self, location: str, column: int) -> None:
@@ -16,6 +18,17 @@ class Seekr:
         db = DB(location, 10000)
 
         self.raw_corpus = db.getTable()
+        self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
+
+        self.vectorize()
+        print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
+
+
+    def load_from_csv(self, location: str, column: int) -> None:
+        start_time = time.perf_counter()
+        csv = CSV(location, 0)
+
+        self.raw_corpus = csv.getTable()
         self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
 
         self.vectorize()
