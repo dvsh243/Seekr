@@ -3,7 +3,7 @@ import sqlite3
 class DB:
 
     def __init__(self, location: str, maxLimit: int = 0) -> None:
-        self.words = []
+        self.words: list = []
 
         conn = sqlite3.connect(location)
 
@@ -14,10 +14,11 @@ class DB:
                 self.words.append( company[1] )
             
         else:
-            for company in cursor.fetchmany(maxLimit):
-                self.words.append( company[1] )
+            for table in cursor.fetchmany(maxLimit):
+                self.words.append( table )
 
-    def getWords(self) -> list:
+
+    def getTable(self) -> list:
         return self.words
 
     def __repr__(self) -> str:

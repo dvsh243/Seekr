@@ -7,29 +7,32 @@ import time
 
 class Seekr:
 
-    def __init__(self, location: str) -> None:
-        start_time = time.perf_counter()
-        db = DB(location, 1000)
-        
-        self.raw_corpus = db.getWords()
-        self.corpus = cleanData( self.raw_corpus[:] )
-        self.tfidf_matrix = self.vectorize(self.corpus)
+    def __init__(self) -> None:
+        pass
 
+
+    def load_from_db(self, location: str, column: int) -> None:
+        start_time = time.perf_counter()
+        db = DB(location, 10000)
+
+        self.raw_corpus = db.getTable()
+        self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
+
+        self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
-    def vectorize(self, corpus: list) -> list[list[int, float]]:
+
+    def vectorize(self) -> None:
         
         self.vectorizer = TfidfVectorizer()
-        tfidf_matrix = self.vectorizer.fit_transform(
-            corpus = corpus,
+        self.tfidf_matrix = self.vectorizer.fit_transform(
+            corpus = self.corpus,
             analyzer = ngrams
         )
 
-        return tfidf_matrix
-    
     
     def __repr__(self) -> str:
-        return "<Seekr Object>"
+        return f"<Seekr Object [{len(self.corpus)} items]>"
     
 
     def get_matches(self, target: str, limit: int = 10) -> list:

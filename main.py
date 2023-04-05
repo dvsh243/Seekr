@@ -1,7 +1,9 @@
 from seekr import Seekr
 import time
 
-seekr = Seekr('data/companies.sqlite')
+seekr = Seekr()
+seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
+
 
 while True:
     print()
