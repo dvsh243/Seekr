@@ -22,7 +22,7 @@ def calculate_cosine_similarity(input1: list[list], input2: list[list]):
     numerator = (a * d) + (b * e) + (c * f)
     denominator = sqrt( (a^2 + b^2 + c^2) * (d^2 + e^2 + f^2) )
     """
-    # find a more optimized code
+    # FIX DENOMINATOR ASAP, WRONG MATH
 
     doc1 = {idx: tfidf for idx, tfidf in input1 if idx != -1}
     # if idx = -1, means it will not ecist in the second string => 0 impact on cosine similarity
