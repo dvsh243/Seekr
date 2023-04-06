@@ -24,7 +24,7 @@ class distance:
         therefore, cosθ = x.y / |x|*|y|
         => cosθ = 11 / √125
         """
-        if not input2: return 0
+        if not input1 or not input2: return 0
 
         target = Vector(input1)
         doc = Vector(input2)

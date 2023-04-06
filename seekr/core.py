@@ -1,5 +1,4 @@
-from seekr.db import DB
-from seekr.csv import CSV
+from seekr.load_data import DB, CSV
 from seekr.utils import cleanData
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
