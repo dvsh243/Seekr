@@ -2,8 +2,8 @@ from seekr import Seekr
 import time
 
 seekr = Seekr()
-# seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
-seekr.load_from_csv(location = 'data/trending.csv', column = 2)
+seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
+# seekr.load_from_csv(location = 'data/trending.csv', column = 2)
 
 
 while True:

@@ -37,12 +37,12 @@ class TfidfVectorizer:
         """
         featureIdxMap = {}
 
-        index = 0
+        self.index = 0
         for document in self.corpus:
             for feature in self.analyze(document):
                 if feature in featureIdxMap: continue
-                featureIdxMap[feature] = index
-                index += 1
+                featureIdxMap[feature] = self.index
+                self.index += 1
 
         return featureIdxMap
     
@@ -126,6 +126,10 @@ class TfidfVectorizer:
             idf = self.totalDocs / self.featureDocCnt.get(feature, 1)
             idf = math.log(idf)  # base e
 
-            tfidf_list.append( [self.featureIdxMap.get(feature, -1), tf * idf] )
+            if feature in self.featureIdxMap:
+                tfidf_list.append( [self.featureIdxMap[feature], tf * idf] )
+            else:
+                tfidf_list.append( [self.index, tf * idf] )
+                self.index += 1
 
         return tfidf_list

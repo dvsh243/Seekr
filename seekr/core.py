@@ -1,8 +1,9 @@
 from seekr.db import DB
 from seekr.csv import CSV
-from seekr.utils import cleanData, calculate_cosine_similarity
+from seekr.utils import cleanData
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
+from seekr.loss_functions import distance
 import heapq
 import time
 
@@ -56,7 +57,7 @@ class Seekr:
         sim_item_heap = []  # max heap
 
         for i in range(len(self.corpus)):
-            similarity = calculate_cosine_similarity(target_tfidf, self.tfidf_matrix[i])
+            similarity = distance.cosine_similarity(target_tfidf, self.tfidf_matrix[i])
             if similarity == 0: continue
 
             heapq.heappush(sim_item_heap, (
