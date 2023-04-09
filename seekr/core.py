@@ -3,8 +3,11 @@ from seekr.utils import cleanData
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
 from seekr.loss_functions import distance
+from seekr.matrix import Matrix
 import heapq
 import time
+
+from seekr.vector_index.KMeansClustering.match import KMeansMatch
 
 class Seekr:
 
@@ -42,6 +45,9 @@ class Seekr:
             corpus = self.corpus,
             analyzer = ngrams
         )
+
+        # MATRIX = Matrix(self.tfidf_matrix)
+        # KMeansMatch(MATRIX.dense_matrix)
 
     
     def __repr__(self) -> str:
