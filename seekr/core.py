@@ -15,7 +15,7 @@ class Seekr:
 
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
-        db = DB(location, 200000)
+        db = DB(location, 10000)
 
         self.raw_corpus = db.getTable()
         self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
@@ -68,7 +68,9 @@ class Seekr:
         sim_item_heap = []  # max heap
 
         for i in range(len(self.corpus)):
-            similarity = distance.cosine_similarity(target_tfidf, self.tfidf_matrix[i])
+            # similarity = distance.cosine_similarity(target_tfidf, self.tfidf_matrix[i])
+            similarity = 1 / distance.euclidian_distance(target_tfidf, self.tfidf_matrix[i]) # the smaller the distance, the more the similarity
+
             if similarity == 0: continue
 
             heapq.heappush(sim_item_heap, (

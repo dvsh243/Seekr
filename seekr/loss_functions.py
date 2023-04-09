@@ -1,5 +1,5 @@
+import math
 from seekr.vectors import Vector
-
 
 class distance:
     """
@@ -34,6 +34,20 @@ class distance:
 
         return numerator / denominator
 
+
+    def euclidian_distance(input1: list[list], input2: list[list]) -> float:
+        """distance = √ [(x2 – x1)^2 + (y2 – y1)^2]"""
+        target = Vector(input1)
+        doc = Vector(input2)
+        commonFeatures = Vector.get_common_features(target, doc)
+
+        res = 0
+        for key , (n2, n1) in commonFeatures.items():
+            res += math.pow(n2 - n1, 2)
+
+        res = math.sqrt(res)
+        return res
+    
 
     def levenshtein_distance(s: str, t: str) -> int:
         return 0

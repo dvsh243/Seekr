@@ -24,3 +24,18 @@ class Vector:
                 dot += val * vector2.featureMap[idx]
         
         return dot
+    
+    
+    def get_common_features(target, doc) -> dict:
+        commonFeatures = {}  # {featureID : (value in target, value in doc)}
+
+        for feature in target.featureMap:
+            commonFeatures[ feature ] = [target.featureMap[feature], 0]
+
+        for feature in doc.featureMap:
+            if feature in commonFeatures:
+                commonFeatures[ feature ][1] = doc.featureMap[feature]
+            else:
+                commonFeatures[ feature ] = [0, doc.featureMap[feature]]
+        
+        return commonFeatures
