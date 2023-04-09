@@ -15,7 +15,7 @@ class Seekr:
 
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
-        db = DB(location, 10000)
+        db = DB(location, 200000)
 
         self.raw_corpus = db.getTable()
         self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
@@ -49,6 +49,18 @@ class Seekr:
     
 
     def get_matches(self, target: str, limit: int = 10) -> list:
+        """
+        use better algorithms
+        -> Linear (Exhaustive) Search 
+        -> K-Nearest Neighbors 
+        -> k-d Trees 
+        -> Scalar quantization 
+        -> Product quantization 
+        -> Navigable Small Worlds 
+        -> Hierarchical Navigable Small Worlds 
+        -> Vector Encoding Using LSH 
+        -> ANNOY (Spotify) (Single Tree and Tree Forest)
+        """
         
         target = target.lower()
         target_tfidf = self.vectorizer.create_target_tfidf(target)

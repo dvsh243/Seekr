@@ -1,4 +1,4 @@
-from seekr.vectors import Vector, dot_product
+from seekr.vectors import Vector
 
 
 class distance:
@@ -29,7 +29,7 @@ class distance:
         target = Vector(input1)
         doc = Vector(input2)
 
-        numerator = dot_product(target, doc)
+        numerator = Vector.dot_product(target, doc)
         denominator = target.magnitude() * doc.magnitude()
 
         return numerator / denominator

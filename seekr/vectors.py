@@ -16,12 +16,11 @@ class Vector:
         return f"<Vector: {self.raw_array}>"
     
 
+    def dot_product(vector1, vector2) -> float:
+        dot = 0
 
-def dot_product(vector1: Vector, vector2: Vector) -> float:
-    dot = 0
-
-    for idx, val in vector1.featureMap.items():
-        if idx in vector2.featureMap:
-            dot += val * vector2.featureMap[idx]
-    
-    return dot
+        for idx, val in vector1.featureMap.items():
+            if idx in vector2.featureMap:
+                dot += val * vector2.featureMap[idx]
+        
+        return dot
