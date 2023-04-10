@@ -15,4 +15,4 @@ while True:
     print(f"fetched {len(matches)} results in {str(time.perf_counter() - start_time)[:5]} seconds.", end='\n\n')
 
     for match in matches:
-        print(match[0], match[1], sep='\t')
+        print(str(match[1])[:5], match[0], sep='\t')

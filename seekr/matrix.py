@@ -39,3 +39,8 @@ class Matrix:
             res[idx] = value
         
         return res
+
+    def clear_memory(self) -> None:
+        del self.matrix
+        del self.dense_matrix
+        print("deleted `self.matrix` and `self.dense_matrix`")
