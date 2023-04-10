@@ -20,6 +20,7 @@ matches = seekr.get_matches('Active Fund LLC', 3)
 dense vector -> `[0, 0, 4.51, 0, 0, 9.23, 0, 0, 0, 0, 0]`\
 sparse vector -> `[(2, 4.51), (5, 9.23)]`
 
-- Features which occur only `k` times in the whole corpus aren't added as a dimension in the vector resulting in fast comparison at the tradeoff of querying for unique features that can be found in the document.
+- Features which occur <= `k` times in the whole corpus aren't added as a dimension in the vector resulting in fast comparison at the tradeoff of querying for unique features that can be found in the document.
 
-- Using `ngrams` to define features instead of `whitespace` which result in more dimension to the vector but more accurate fuzzy searching.
+- Using `ngrams` to define features instead of `whitespace` which result in more dimension to the vector but more accurate fuzzy searching.\
+ngram of `"EMERGENCY"` = `['EME', 'MER', 'ERG', 'RGE', 'GEN', 'ENC', 'NCY']`
