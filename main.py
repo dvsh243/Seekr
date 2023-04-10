@@ -3,7 +3,6 @@ import time
 
 seekr = Seekr()
 seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
-# seekr.load_from_csv(location = 'data/trending.csv', column = 2)
 
 
 while True:
@@ -15,4 +14,4 @@ while True:
     print(f"fetched {len(matches)} results in {str(time.perf_counter() - start_time)[:5]} seconds.", end='\n\n')
 
     for match in matches:
-        print(str(match[1])[:5], match[0], sep='\t')
+        print(str(match[0])[:5], match[1], sep='\t')

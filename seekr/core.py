@@ -1,40 +1,26 @@
-from seekr.load_data import DB, CSV
-from seekr.utils import cleanData
+from seekr.load_data import DB
+from seekr.utils import cleanDocument
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
 from seekr.loss_functions import distance
-from seekr.matrix import Matrix
 import heapq
 import time
 
-# from seekr.vector_index.gensim_match import GensimIndex
 
 class Seekr:
 
     def __init__(self) -> None:
-        self.raw_corpus: list[list] = []
         self.corpus: list = []
 
 
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
-        db = DB(location, 100000)  # dont go above 10,000
-
-        self.raw_corpus = db.getTable()
-        self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
-
-        self.vectorize()
-        print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
-
-
-    def load_from_csv(self, location: str, column: int) -> None:
-        start_time = time.perf_counter()
-        csv = CSV(location, 0)
-
-        self.raw_corpus = csv.getTable()
-        self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
+        
+        self.db = DB(location, 5000)
+        self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         self.vectorize()
+
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
 
@@ -46,57 +32,27 @@ class Seekr:
             analyzer = ngrams
         )
 
-        # self.MATRIX = Matrix(self.tfidf_matrix)
-        # self.vector_index = GensimIndex(self.MATRIX.dense_matrix)
-        # self.MATRIX.clear_memory()
-
     
     def __repr__(self) -> str:
         return f"<Seekr Object [{len(self.corpus)} items]>"
     
 
-    def get_matches(self, target: str, limit: int = 10) -> list:
-        """
-        use better indexing algorithms,
-        -> Linear (Exhaustive) Search 
-        -> K-Nearest Neighbors 
-        -> k-d Trees 
-        -> Scalar quantization 
-        -> Product quantization 
-        -> Navigable Small Worlds 
-        -> Hierarchical Navigable Small Worlds 
-        -> Vector Encoding Using LSH 
-        -> ANNOY (Spotify) (Single Tree and Tree Forest)
-        """
-        
-        target = target.lower()
-        target_tfidf = self.vectorizer.create_target_tfidf(target)
-        # target_tfidf_dense = self.MATRIX.target_dense(target_tfidf)
-        
-        # most_similar = []
-        # for idx, similarity in self.vector_index.match(target_tfidf_dense):
-        #     most_similar.append( (self.raw_corpus[idx][1], similarity) )
+    def get_matches(self, target: str, limit: int = 3):
+        target = cleanDocument(target)
+        target_vector = self.vectorizer.doc_to_vector(target)
 
-        # return most_similar
-    
-        sim_item_heap = []  # max heap
+        similarity = []  # min heap
 
-        for i in range(len(self.corpus)):
-            # similarity = distance.cosine_similarity(target_tfidf, self.tfidf_matrix[i])
-            similarity = 1 / distance.euclidian_distance(target_tfidf, self.tfidf_matrix[i]) # the smaller the distance, the more the similarity
+        for index, doc_vector in enumerate(self.vectorizer.matrix):
+            if index % 100 == 0: print(f"compared {str((index / len(self.corpus)) * 100)[:5]} %", end='\r')
 
-            if similarity == 0: continue
+            heapq.heappush(
+                similarity,
+                ( distance.euclidian_distance(target_vector, doc_vector), index )
+            )
 
-            heapq.heappush(sim_item_heap, (
-                similarity * -1,
-                self.raw_corpus[i]
-            ))
-
-        # print(f"{len(sim_item_heap)} items in heap.")
-
-        most_common = []
-        for i in range( min(limit, len(sim_item_heap)) ):
-            sim, item = heapq.heappop(sim_item_heap)
-            most_common.append( (item, sim * -1) )
-        
-        return most_common
+        res = []
+        for i in range(limit):
+            sim_value, index = heapq.heappop(similarity)
+            res.append( (sim_value, self.db.rows[index]) )
+        return res
