@@ -1,4 +1,3 @@
-import math
 from seekr.vectors import Vector
 
 class distance:
@@ -11,7 +10,7 @@ class distance:
     Minkowski Distance. 
     """
     
-    def cosine_similarity(input1: list[list], input2: list[list]) -> float:
+    def cosine_similarity(vector1: list[list], vector2: list[list]) -> float:
         """
         reference: https://www.youtube.com/watch?v=e9U0QAFbfLI
 
@@ -24,10 +23,10 @@ class distance:
         therefore, cosθ = x.y / |x|*|y|
         => cosθ = 11 / √125
         """
-        if not input1 or not input2: return 0
+        if not vector1 or not vector2: return 0
 
-        target = Vector(input1)
-        doc = Vector(input2)
+        target = Vector(vector1)
+        doc = Vector(vector2)
 
         numerator = Vector.dot_product(target, doc)
         denominator = target.magnitude() * doc.magnitude()
@@ -35,18 +34,11 @@ class distance:
         return numerator / denominator
 
 
-    def euclidian_distance(input1: list[list], input2: list[list]) -> float:
-        """distance = √ [(x2 – x1)^2 + (y2 – y1)^2]"""
-        target = Vector(input1)
-        doc = Vector(input2)
-        commonFeatures = Vector.get_common_features(target, doc)
+    def euclidian_distance(vector1: list[list], vector2: list[list]) -> float:
+        target = Vector(vector1)
+        doc = Vector(vector2)
 
-        res = 0
-        for key , (n2, n1) in commonFeatures.items():
-            res += math.pow(n2 - n1, 2)
-
-        res = math.sqrt(res)
-        return res
+        return Vector.euclidian_distance(target, doc)
     
 
     def levenshtein_distance(s: str, t: str) -> int:

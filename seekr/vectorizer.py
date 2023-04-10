@@ -1,6 +1,6 @@
 import collections
 import math
-import numpy as np
+# import numpy as np
 
 
 class TfidfVectorizer:
@@ -19,6 +19,7 @@ class TfidfVectorizer:
         self.totalDocs = 0  # total number of documents / vectors
         pass
 
+
     def fit_transform(self, corpus: list, analyzer: callable) -> list[list]:
         self.totalDocs = len(corpus)
         self.analyzer: callable = analyzer
@@ -33,10 +34,13 @@ class TfidfVectorizer:
 
         matrix = []
 
-        for document in corpus:
+        for i, document in enumerate(corpus):
+            if i % 100 == 0: print(f"completed {str((i / self.totalDocs) * 100)[:5]} %", end='\r')
+
             matrix.append( self.doc_to_vector(document) )
         
-        return np.matrix(matrix)
+        return matrix
+        # return np.matrix(matrix)  # conversion to numpy matrix takes alot of time
 
     
     def doc_to_vector(self, document: str) -> list[float]:

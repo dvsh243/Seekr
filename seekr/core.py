@@ -1,5 +1,5 @@
 from seekr.load_data import DB, CSV
-from seekr.utils import cleanData
+from seekr.utils import cleanDocument
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
 from seekr.loss_functions import distance
@@ -16,8 +16,8 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        db = DB(location, 10)
-        self.corpus = [cleanData(x[column]) for x in db.rows]
+        db = DB(location, 20)
+        self.corpus = [cleanDocument(x[column]) for x in db.rows]
 
         self.vectorize()
 
@@ -35,3 +35,10 @@ class Seekr:
     
     def __repr__(self) -> str:
         return f"<Seekr Object [{len(self.corpus)} items]>"
+    
+
+    def get_matches(self, target: str, limit: int = 3):
+        target = cleanDocument(target)
+        target_vector = self.vectorizer.doc_to_vector(target)
+
+        print(target_vector)

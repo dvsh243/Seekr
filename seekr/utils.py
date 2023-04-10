@@ -1,4 +1,5 @@
 import re
 
-def cleanData(words: str) -> str:
-    return re.sub(r'[,\'./()]|\sBD',r'', words)
+def cleanDocument(document: str) -> str:
+    document = document.lower()
+    return re.sub(r'[,\'./()]|\sBD',r'', document)

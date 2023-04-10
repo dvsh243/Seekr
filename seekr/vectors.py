@@ -3,39 +3,35 @@ import math
 class Vector:
 
     def __init__(self, array: list) -> None:
-        self.raw_array = array
-        self.featureMap = {idx: tfidf for idx, tfidf in array}
+        self.values = array
     
     def magnitude(self) -> float:
         mag = 0
-        for idx, tfidf in self.raw_array:
-            mag += math.pow(tfidf, 2)
+        for value in self.values:
+            mag += math.pow(value, 2)
+
         return math.sqrt(mag)
 
-    def __repr__(self) -> str:
-        return f"<Vector: {self.raw_array}>"
-    
 
+    @staticmethod
     def dot_product(vector1, vector2) -> float:
         dot = 0
+        for i1, i2 in zip(vector1.values, vector2.values):
+            dot += i1 * i2
 
-        for idx, val in vector1.featureMap.items():
-            if idx in vector2.featureMap:
-                dot += val * vector2.featureMap[idx]
-        
         return dot
-    
-    
-    def get_common_features(target, doc) -> dict:
-        commonFeatures = {}  # {featureID : (value in target, value in doc)}
 
-        for feature in target.featureMap:
-            commonFeatures[ feature ] = [target.featureMap[feature], 0]
 
-        for feature in doc.featureMap:
-            if feature in commonFeatures:
-                commonFeatures[ feature ][1] = doc.featureMap[feature]
-            else:
-                commonFeatures[ feature ] = [0, doc.featureMap[feature]]
+    @staticmethod
+    def euclidian_distance(vector1, vector2) -> float:
+        """distance = √ [(x2 - x1)^2 + (y2 - y1)^2]"""
+        dist = 0
+        for x1, x2 in zip(vector1.values, vector2.values):
+            dist += math.pow(x2 - x1, 2)
         
-        return commonFeatures
+        return math.sqrt(dist)
+
+    
+    def __repr__(self) -> str:
+        return f"<Vector: {self.values[:3]}... {len(self.values)}>"
+    

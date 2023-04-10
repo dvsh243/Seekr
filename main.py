@@ -4,6 +4,7 @@ import time
 seekr = Seekr()
 seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
 
+seekr.get_matches('holdings inc')
 
 # while True:
 #     print()
