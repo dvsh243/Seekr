@@ -12,14 +12,23 @@
 
 
 
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
+from gensim.models import KeyedVectors  # uses HNSW
 import collections
 
 class KMeansMatch:
 
     def __init__(self, vectors: list[list], k: int = 20) -> None:
-        kmeans = KMeans(n_clusters = k)
-        kmeans.fit(vectors)
 
-        print(kmeans.cluster_centers_.shape)
-        print( collections.Counter(kmeans.labels_) ) 
+        self.kv = KeyedVectors(len(vectors[0]))
+        self.kv.add_vectors([i for i in range(len(vectors))], vectors)
+
+
+    def match(self, target_tfidf_dense: list):
+
+        # self.kv.add_vector(-1 , target_tfidf_dense)
+        # return self.kv.most_similar(-1, topn=5)
+
+        # return self.kv.similar_by_vector(target_tfidf_dense, topn = 5)
+
+        return self.kv.most_similar(positive = [target_tfidf_dense], topn = 5)

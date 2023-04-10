@@ -18,7 +18,7 @@ class Seekr:
 
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
-        db = DB(location, 10000)
+        db = DB(location, 1000)
 
         self.raw_corpus = db.getTable()
         self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
@@ -46,8 +46,8 @@ class Seekr:
             analyzer = ngrams
         )
 
-        # MATRIX = Matrix(self.tfidf_matrix)
-        # KMeansMatch(MATRIX.dense_matrix)
+        self.MATRIX = Matrix(self.tfidf_matrix)
+        self.vector_index = KMeansMatch(self.MATRIX.dense_matrix)
 
     
     def __repr__(self) -> str:
@@ -70,7 +70,16 @@ class Seekr:
         
         target = target.lower()
         target_tfidf = self.vectorizer.create_target_tfidf(target)
+        print(target_tfidf)
+        target_tfidf_dense = self.MATRIX.target_dense(target_tfidf)
 
+        most_similar = []
+        for idx, similarity in self.vector_index.match(target_tfidf_dense):
+            most_similar.append( (self.raw_corpus[idx][1], similarity) )
+
+        return most_similar
+    
+'''
         sim_item_heap = []  # max heap
 
         for i in range(len(self.corpus)):
@@ -92,3 +101,4 @@ class Seekr:
             most_common.append( (item, sim * -1) )
         
         return most_common
+'''

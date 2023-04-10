@@ -29,3 +29,13 @@ class Matrix:
             for c, value in row:
                 new_row[c] = value
             self.dense_matrix[i] = new_row
+
+    
+    def target_dense(self, target_list) -> list:
+        res = [0 for _ in range(self.max_col + 1)]
+
+        for idx, value in target_list:
+            if idx > self.max_col: continue
+            res[idx] = value
+        
+        return res
