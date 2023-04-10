@@ -16,7 +16,7 @@ matches = seekr.get_matches('Active Fund LLC', 3)
 
 ## Tradeoffs
 
-- Using dense matrix instead of sparse matrix for easy indexing and calculation of dot product and euclidian distance between two vectors.
+- Using dense matrix instead of sparse matrix for easy indexing and calculation of dot product and euclidian distance between two vectors.\
 dense vector -> `[0, 0, 4.51, 0, 0, 9.23, 0, 0, 0, 0, 0]`\
 sparse vector -> `[(2, 4.51), (5, 9.23)]`
 
