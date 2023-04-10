@@ -16,8 +16,8 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        db = DB(location, 20)
-        self.corpus = [cleanDocument(x[column]) for x in db.rows]
+        self.db = DB(location, 20)
+        self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         self.vectorize()
 
@@ -29,7 +29,7 @@ class Seekr:
         self.vectorizer = TfidfVectorizer()
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
-            analyzer = whitespace
+            analyzer = ngrams
         )
 
     
@@ -41,4 +41,16 @@ class Seekr:
         target = cleanDocument(target)
         target_vector = self.vectorizer.doc_to_vector(target)
 
-        print(target_vector)
+        similarity = []  # min heap
+
+        for index, doc_vector in enumerate(self.vectorizer.matrix):
+            heapq.heappush(
+                similarity,
+                ( distance.euclidian_distance(target_vector, doc_vector), index )
+            )
+
+        res = []
+        for i in range(limit):
+            sim_value, index = heapq.heappop(similarity)
+            res.append( (sim_value, self.db.rows[index]) )
+        return res
