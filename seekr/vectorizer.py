@@ -24,7 +24,7 @@ class TfidfVectorizer:
         self.totalDocs = len(corpus)
         self.analyzer: callable = analyzer
         
-        self.featureMap = self.get_feature_map(corpus)
+        self.featureMap = self.get_feature_map(corpus, k = 1)
         self.featureDocCnt = self.get_feature_doc_count(corpus)
 
         self.matrix = self.create_matrix(corpus)
@@ -68,8 +68,9 @@ class TfidfVectorizer:
     # - # - # UTILITY FUNCTIONS # - # - #
     # - # - # - # - # - # - # - # - # - # 
 
-    def get_feature_map(self, corpus: list) -> dict:
+    def get_feature_map(self, corpus: list, k: int = 0) -> dict:
         """
+        k: int, if feature has <= k frequency in the whole corpus, it isnt added as a dimension in the vectors
         map every feature to a unique ID
         the more the frequency of the feature, the lower its index
         """
@@ -81,6 +82,7 @@ class TfidfVectorizer:
 
         to_sort = []
         for key, value in counter.items():
+            if value <= k: continue  # [OPTIMIZE] reduces dimensions in vector, but with tradeoff that it cannot fuzzy search for unique features that occur only once in the whole corpus
             to_sort.append( (value, key) )  # (count, feature) pair
         to_sort.sort(reverse = True)
 
