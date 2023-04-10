@@ -1,5 +1,7 @@
 import collections
 import math
+import numpy as np
+
 
 class TfidfVectorizer:
     
@@ -13,123 +15,91 @@ class TfidfVectorizer:
     # therefore, TF = 1 / 2 = 0.5
 
     def __init__(self) -> None:
-        self.tfidf_matrix = []
-        self.totalDocs = 0
+        self.featureIndex = 0  # number of unique features / dimentions in vectors
+        self.totalDocs = 0  # total number of documents / vectors
+        pass
 
     def fit_transform(self, corpus: list, analyzer: callable) -> list[list]:
-        
-        self.analyze: callable = analyzer
-        self.corpus = corpus
         self.totalDocs = len(corpus)
+        self.analyzer: callable = analyzer
+        
+        self.featureMap = self.get_feature_map(corpus)
+        self.featureDocCnt = self.get_feature_doc_count(corpus)
 
-        self.featureIdxMap = self.create_featureMap()
-        self.featureDocCnt = self.create_feature_doc_count()
+        self.matrix = self.create_matrix(corpus)
 
-        min_val, max_val = self.create_tfidf_matrix()
-        # self.normalize_matrix(min_val, max_val)
-
-        return self.tfidf_matrix
     
+    def create_matrix(self, corpus: list[str]) -> list[list[float]]:
 
-    def create_featureMap(self) -> dict:
-        """
-        Assigning a unique integer value to each feature to be assigned a column in tfidf_matrix.
-        """
-        featureIdxMap = {}
+        matrix = []
 
-        self.index = 0
-        for document in self.corpus:
-            for feature in self.analyze(document):
-                if feature in featureIdxMap: continue
-                featureIdxMap[feature] = self.index
-                self.index += 1
+        for document in corpus:
+            matrix.append( self.doc_to_vector(document) )
+        
+        return np.matrix(matrix)
 
-        return featureIdxMap
     
+    def doc_to_vector(self, document: str) -> list[float]:
 
-    def create_feature_doc_count(self) -> dict:
+        frequencies = collections.defaultdict(int)
+        for feature in self.analyzer(document):
+            frequencies[feature] += 1
+        totalFreq = sum(frequencies.values())
+        
+        vector = [0 for _ in range(self.featureIndex)]
+
+        for feature in self.analyzer(document):
+            
+            if feature in self.featureMap:
+                index = self.featureMap[feature]  # put the tfidf value at this column
+                IDF = math.log( self.totalDocs / self.featureDocCnt[feature] )
+                TF = frequencies[feature] / totalFreq
+
+                vector[index] = TF * IDF
+        
+        return vector
+
+
+    # - # - # UTILITY FUNCTIONS # - # - #
+    # - # - # - # - # - # - # - # - # - # 
+
+    def get_feature_map(self, corpus: list) -> dict:
         """
-        Creating hashMap for feature mapped to number of documents it has been used in.
+        map every feature to a unique ID
+        the more the frequency of the feature, the lower its index
+        """
+        counter = collections.Counter()
+
+        for document in corpus:
+            for feature in self.analyzer(document):
+                counter[feature] += 1
+
+        to_sort = []
+        for key, value in counter.items():
+            to_sort.append( (value, key) )  # (count, feature) pair
+        to_sort.sort(reverse = True)
+
+        featureMap = {}
+        for _, feature in to_sort:
+            featureMap[feature] = self.featureIndex
+            self.featureIndex += 1
+        
+        return featureMap
+
+
+    def get_feature_doc_count(self, corpus: list) -> dict:
+        """
+        how many has documents has feature `feature` been used in 
         """
         featureDocCnt = collections.defaultdict(int)
 
-        for document in self.corpus:
+        for document in corpus:
             seen = set()
 
-            for feature in self.analyze(document):
+            for feature in self.analyzer(document):
                 if feature in seen: continue
 
                 featureDocCnt[feature] += 1
                 seen.add(feature)  # to avoid duplicate features in the same document
         
         return featureDocCnt
-    
-
-    def get_featureCnt_of_doc(self, document) -> tuple[set, int]:
-    
-        featureCnt = collections.defaultdict(int)
-        totalFeatures = 0
-
-        for feature in self.analyze(document):
-            featureCnt[feature] += 1
-            totalFeatures += 1
-
-        return {f: c for f, c in featureCnt.items()}, totalFeatures
-    
-
-    def create_tfidf_matrix(self) -> tuple[float, float]:
-        min_tfidf, max_tfidf = float('inf'), 0
-        
-        for document in self.corpus:
-            featureCnt, total = self.get_featureCnt_of_doc(document)
-
-            # tfidr_list = [0 for _ in range(len(self.featureIdxMap))]  # dense
-            tfidf_list = []  # CSR sparse matrix
-
-            for feature in featureCnt:
-                tf = featureCnt[feature] / total
-                idf = self.totalDocs / self.featureDocCnt[feature]
-                idf = math.log(idf)  # base e
-
-                # append (featureIndex, tfidf value)
-                tfidf_list.append( [self.featureIdxMap[feature], tf * idf] )
-
-                min_tfidf = min(min_tfidf, tf * idf); max_tfidf = max(max_tfidf, tf * idf)
-        
-            self.tfidf_matrix.append(tfidf_list)
-
-        return min_tfidf, max_tfidf
-    
-
-    def normalize_matrix(self, min_val: float = 0, max_val: float = 1) -> None:
-        """
-        list = [1, 9, 10],      min=1, max=10
-        list[0] = (1 - 1) / (10 - 1)
-        list[i] = (list[i] - min) / (max - min)
-        """
-
-        for i in range(len(self.tfidf_matrix)):
-            for j in range(len(self.tfidf_matrix[i])):
-            
-                self.tfidf_matrix[i][j][1] = (self.tfidf_matrix[i][j][1] - min_val) / (max_val - min_val)
-                # print(self.tfidf_matrix[i][j], end='  -  ')
-            # print()
-
-
-    def create_target_tfidf(self, target: str) -> list[list]:
-        tfidf_list = []
-        
-        featureCnt, total = self.get_featureCnt_of_doc(target)
-
-        for feature in featureCnt:
-            tf = featureCnt[feature] / total
-            idf = self.totalDocs / self.featureDocCnt.get(feature, 1)
-            idf = math.log(idf)  # base e
-
-            if feature in self.featureIdxMap:
-                tfidf_list.append( [self.featureIdxMap[feature], tf * idf] )
-            else:
-                tfidf_list.append( [self.index, tf * idf] )
-                self.index += 1
-
-        return tfidf_list

@@ -6,7 +6,6 @@ class DB:
         self.rows: list = []
 
         conn = sqlite3.connect(location)
-
         cursor = conn.execute(f"select * from companies")
         
         if not maxLimit:
@@ -17,9 +16,6 @@ class DB:
             for table in cursor.fetchmany(maxLimit):
                 self.rows.append( table )
 
-
-    def getTable(self) -> list[tuple]:
-        return self.rows
 
     def __repr__(self) -> str:
         return f"<DB: {len(self.rows)} items>"
