@@ -1,4 +1,4 @@
-from seekr.load_data import DB, CSV
+from seekr.load_data import DB
 from seekr.utils import cleanDocument
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
@@ -16,12 +16,12 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 20)
+        self.db = DB(location, 5000)
         self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         self.vectorize()
 
-        print(f"\nloaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
+        print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
 
     def vectorize(self) -> None:
@@ -44,6 +44,8 @@ class Seekr:
         similarity = []  # min heap
 
         for index, doc_vector in enumerate(self.vectorizer.matrix):
+            if index % 100 == 0: print(f"compared {str((index / len(self.corpus)) * 100)[:5]} %", end='\r')
+
             heapq.heappush(
                 similarity,
                 ( distance.euclidian_distance(target_vector, doc_vector), index )

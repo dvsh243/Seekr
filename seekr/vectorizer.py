@@ -28,6 +28,7 @@ class TfidfVectorizer:
         self.featureDocCnt = self.get_feature_doc_count(corpus)
 
         self.matrix = self.create_matrix(corpus)
+        print(f"vectors contains {self.featureIndex} dimentions.")
 
     
     def create_matrix(self, corpus: list[str]) -> list[list[float]]:
