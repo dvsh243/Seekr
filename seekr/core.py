@@ -7,7 +7,7 @@ from seekr.matrix import Matrix
 import heapq
 import time
 
-from seekr.vector_index.gensim_match import GensimIndex
+# from seekr.vector_index.gensim_match import GensimIndex
 
 class Seekr:
 
@@ -18,7 +18,7 @@ class Seekr:
 
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
-        db = DB(location, 10000)  # dont go above 10,000
+        db = DB(location, 100000)  # dont go above 10,000
 
         self.raw_corpus = db.getTable()
         self.corpus = cleanData( [x[column] for x in self.raw_corpus] )
@@ -46,9 +46,9 @@ class Seekr:
             analyzer = ngrams
         )
 
-        self.MATRIX = Matrix(self.tfidf_matrix)
-        self.vector_index = GensimIndex(self.MATRIX.dense_matrix)
-        self.MATRIX.clear_memory()
+        # self.MATRIX = Matrix(self.tfidf_matrix)
+        # self.vector_index = GensimIndex(self.MATRIX.dense_matrix)
+        # self.MATRIX.clear_memory()
 
     
     def __repr__(self) -> str:
@@ -71,15 +71,14 @@ class Seekr:
         
         target = target.lower()
         target_tfidf = self.vectorizer.create_target_tfidf(target)
-        target_tfidf_dense = self.MATRIX.target_dense(target_tfidf)
+        # target_tfidf_dense = self.MATRIX.target_dense(target_tfidf)
         
-        most_similar = []
-        for idx, similarity in self.vector_index.match(target_tfidf_dense):
-            most_similar.append( (self.raw_corpus[idx][1], similarity) )
+        # most_similar = []
+        # for idx, similarity in self.vector_index.match(target_tfidf_dense):
+        #     most_similar.append( (self.raw_corpus[idx][1], similarity) )
 
-        return most_similar
+        # return most_similar
     
-'''
         sim_item_heap = []  # max heap
 
         for i in range(len(self.corpus)):
@@ -101,4 +100,3 @@ class Seekr:
             most_common.append( (item, sim * -1) )
         
         return most_common
-'''
