@@ -39,7 +39,8 @@ class TfidfVectorizer:
             if i % 100 == 0: print(f"completed {str((i / self.totalDocs) * 100)[:5]} %", end='\r')
 
             matrix.append( self.doc_to_vector(document) )
-        
+            print(matrix[-1])
+
         return matrix
         # return np.matrix(matrix)  # conversion to numpy matrix takes alot of time
 
@@ -56,11 +57,15 @@ class TfidfVectorizer:
         for feature in self.analyzer(document):
             
             if feature in self.featureMap:
-                index = self.featureMap[feature]  # put the tfidf value at this column
+                index = self.featureMap[feature]  # put the tfidf value at this column of the vector
                 IDF = math.log( self.totalDocs / self.featureDocCnt[feature] )
                 TF = frequencies[feature] / totalFreq
 
                 vector[index] = TF * IDF
+
+            else: pass 
+            # [OPTIMIZE] columns which are not present in corpus, are not added as dimentions,
+            # resulting in lower euclidian distance but optimized comparison
         
         return vector
 
