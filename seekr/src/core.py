@@ -31,7 +31,7 @@ class Seekr:
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
             analyzer = ngrams,
-            skip_k = 1,
+            skip_k = 3,
         )
         self.totalFeatures = self.vectorizer.featureIndex
 
@@ -61,7 +61,7 @@ class Seekr:
             )
 
         res = []
-        for i in range(limit):
+        for _ in range(limit):
             sim_value, index = heapq.heappop(similarity)
             res.append( (sim_value, self.db.rows[index]) )
         return res
