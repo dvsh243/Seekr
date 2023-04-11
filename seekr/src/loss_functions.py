@@ -1,5 +1,5 @@
-from seekr.vectors import Vector
-from seekr.vectorizer import TfidfVectorizer
+from seekr.utils.vector import Vector
+from seekr.src.vectorizer import TfidfVectorizer
 
 class distance():
     """

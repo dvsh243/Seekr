@@ -1,8 +1,8 @@
-from seekr.load_data import DB
-from seekr.utils import cleanDocument
-from seekr.vectorizer import TfidfVectorizer
-from seekr.analyzers import whitespace, ngrams
-from seekr.loss_functions import distance
+from seekr.utils.load_data import DB
+from seekr.utils.utils import cleanDocument
+from seekr.src.vectorizer import TfidfVectorizer
+from seekr.utils.analyzers import whitespace, ngrams
+from seekr.src.loss_functions import distance
 import heapq
 import time
 

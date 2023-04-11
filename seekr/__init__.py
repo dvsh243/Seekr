@@ -1,1 +1,1 @@
-from seekr.core import Seekr
+from seekr.src.core import Seekr
