@@ -1,6 +1,5 @@
 import collections
 import math
-from seekr.utils import to_sparse
 # import numpy as np
 
 
@@ -21,9 +20,10 @@ class TfidfVectorizer:
         pass
 
 
-    def fit_transform(self, corpus: list, analyzer: callable, skip_k: int = 1) -> list[list]:
+    def fit_transform(self, corpus: list, analyzer: callable, skip_k: int, sparse: bool) -> list[list]:
         self.totalDocs = len(corpus)
         self.analyzer: callable = analyzer
+        self.sparse = sparse
         
         self.featureMap = self.get_feature_map(corpus, k = skip_k)
         self.featureDocCnt = self.get_feature_doc_count(corpus)
@@ -39,7 +39,7 @@ class TfidfVectorizer:
         for i, document in enumerate(corpus):
             if i % 100 == 0: print(f"completed {str((i / self.totalDocs) * 100)[:5]} %", end='\r')
 
-            matrix.append( to_sparse( self.doc_to_vector(document) ) )  # stores a sparse vector
+            matrix.append( self.doc_to_vector(document) )
 
         return matrix
         # return np.matrix(matrix)  # conversion to numpy matrix takes alot of time
@@ -52,7 +52,8 @@ class TfidfVectorizer:
             frequencies[feature] += 1
         totalFreq = sum(frequencies.values())
         
-        vector = [0 for _ in range(self.featureIndex)]
+        if not self.sparse: vector = [0 for _ in range(self.featureIndex)]
+        else: vector = []
 
         for feature in self.analyzer(document):
             
@@ -61,13 +62,14 @@ class TfidfVectorizer:
                 IDF = math.log( self.totalDocs / self.featureDocCnt[feature] )
                 TF = frequencies[feature] / totalFreq
 
-                vector[index] = TF * IDF
+                if not self.sparse: vector[index] = TF * IDF
+                else: vector.append( (index, TF * IDF) )
 
             else: pass 
             # [OPTIMIZE] columns which are not present in corpus, are not added as dimentions,
             # resulting in lower euclidian distance but optimized comparison
         
-        return vector # dense vector
+        return vector 
 
 
     # - # - # UTILITY FUNCTIONS # - # - #

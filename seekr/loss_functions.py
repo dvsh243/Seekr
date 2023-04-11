@@ -1,6 +1,7 @@
 from seekr.vectors import Vector
+from seekr.vectorizer import TfidfVectorizer
 
-class distance:
+class distance():
     """
     Cosine Similarity. 
     Levenshtien Distance.
@@ -26,7 +27,7 @@ class distance:
     #     """
     #     if not vector1 or not vector2: return 0
 
-    #     target = Vector(vector1, is_sparse=False)
+    #     target = Vector(vector1)
     #     doc = Vector(vector2)
 
     #     numerator = Vector.dot_product(target, doc)
@@ -35,11 +36,12 @@ class distance:
     #     return numerator / denominator
 
 
-    def euclidian_distance(vector1: list[list], vector2: list[list], dimentions: int) -> float:
-        target = Vector(vector1, dimentions, is_sparse=False)
+    def euclidian_distance(vector1: list[list], vector2: list[list], dimentions: int, sparse: bool) -> float:
+        target = Vector(vector1, dimentions)
         doc = Vector(vector2, dimentions)
 
-        return Vector.euclidian_distance(target, doc)
+        if sparse: return Vector.sparse_euclidian_distance(target, doc)
+        else: return Vector.dense_euclidian_distance(target, doc)
     
 
     def levenshtein_distance(s: str, t: str) -> int:

@@ -1,5 +1,5 @@
 from seekr.load_data import DB
-from seekr.utils import cleanDocument, to_sparse
+from seekr.utils import cleanDocument
 from seekr.vectorizer import TfidfVectorizer
 from seekr.analyzers import whitespace, ngrams
 from seekr.loss_functions import distance
@@ -12,12 +12,13 @@ class Seekr:
     def __init__(self) -> None:
         self.corpus: list = []
         self.totalFeatures = 0
+        self.SPARSE = True
 
 
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 10000)
+        self.db = DB(location, 50000)
         self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         self.vectorize()
@@ -31,7 +32,8 @@ class Seekr:
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
             analyzer = ngrams,
-            skip_k = 3
+            skip_k = 1,
+            sparse = self.SPARSE
         )
         self.totalFeatures = self.vectorizer.featureIndex
 
@@ -54,7 +56,8 @@ class Seekr:
                 ( distance.euclidian_distance(
                         vector1 = target_vector, 
                         vector2 = doc_vector, 
-                        dimentions = self.totalFeatures
+                        dimentions = self.totalFeatures,
+                        sparse = self.SPARSE
                     ), 
                     index 
                 )
