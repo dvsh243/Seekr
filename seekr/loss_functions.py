@@ -26,7 +26,7 @@ class distance:
     #     """
     #     if not vector1 or not vector2: return 0
 
-    #     target = Vector(vector1)
+    #     target = Vector(vector1, is_sparse=False)
     #     doc = Vector(vector2)
 
     #     numerator = Vector.dot_product(target, doc)
@@ -36,7 +36,7 @@ class distance:
 
 
     def euclidian_distance(vector1: list[list], vector2: list[list], dimentions: int) -> float:
-        target = Vector(vector1, dimentions)
+        target = Vector(vector1, dimentions, is_sparse=False)
         doc = Vector(vector2, dimentions)
 
         return Vector.euclidian_distance(target, doc)

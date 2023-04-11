@@ -17,7 +17,7 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 20000)
+        self.db = DB(location, 10000)
         self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         self.vectorize()
@@ -42,7 +42,7 @@ class Seekr:
 
     def get_matches(self, target: str, limit: int = 3):
         target = cleanDocument(target)
-        target_vector = to_sparse( self.vectorizer.doc_to_vector(target) )
+        target_vector = self.vectorizer.doc_to_vector(target)
 
         similarity = []  # min heap
 
@@ -55,7 +55,9 @@ class Seekr:
                         vector1 = target_vector, 
                         vector2 = doc_vector, 
                         dimentions = self.totalFeatures
-                    ), index )
+                    ), 
+                    index 
+                )
             )
 
         res = []

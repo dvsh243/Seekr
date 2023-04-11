@@ -67,7 +67,7 @@ class TfidfVectorizer:
             # [OPTIMIZE] columns which are not present in corpus, are not added as dimentions,
             # resulting in lower euclidian distance but optimized comparison
         
-        return vector
+        return vector # dense vector
 
 
     # - # - # UTILITY FUNCTIONS # - # - #
