@@ -12,7 +12,6 @@ class Seekr:
     def __init__(self) -> None:
         self.corpus: list = []
         self.totalFeatures = 0
-        self.SPARSE = True
 
 
     def load_from_db(self, location: str, column: int) -> None:
@@ -33,7 +32,6 @@ class Seekr:
             corpus = self.corpus,
             analyzer = ngrams,
             skip_k = 1,
-            sparse = self.SPARSE
         )
         self.totalFeatures = self.vectorizer.featureIndex
 
@@ -57,7 +55,6 @@ class Seekr:
                         vector1 = target_vector, 
                         vector2 = doc_vector, 
                         dimentions = self.totalFeatures,
-                        sparse = self.SPARSE
                     ), 
                     index 
                 )

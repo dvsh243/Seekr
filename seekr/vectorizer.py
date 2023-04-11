@@ -17,13 +17,11 @@ class TfidfVectorizer:
     def __init__(self) -> None:
         self.featureIndex = 0  # number of unique features / dimentions in vectors
         self.totalDocs = 0  # total number of documents / vectors
-        pass
 
 
-    def fit_transform(self, corpus: list, analyzer: callable, skip_k: int, sparse: bool) -> list[list]:
+    def fit_transform(self, corpus: list, analyzer: callable, skip_k: int) -> list[list]:
         self.totalDocs = len(corpus)
         self.analyzer: callable = analyzer
-        self.sparse = sparse
         
         self.featureMap = self.get_feature_map(corpus, k = skip_k)
         self.featureDocCnt = self.get_feature_doc_count(corpus)
@@ -52,8 +50,7 @@ class TfidfVectorizer:
             frequencies[feature] += 1
         totalFreq = sum(frequencies.values())
         
-        if not self.sparse: vector = [0 for _ in range(self.featureIndex)]
-        else: vector = []
+        vector = []
 
         for feature in self.analyzer(document):
             
@@ -62,8 +59,7 @@ class TfidfVectorizer:
                 IDF = math.log( self.totalDocs / self.featureDocCnt[feature] )
                 TF = frequencies[feature] / totalFreq
 
-                if not self.sparse: vector[index] = TF * IDF
-                else: vector.append( (index, TF * IDF) )
+                vector.append( (index, TF * IDF) )
 
             else: pass 
             # [OPTIMIZE] columns which are not present in corpus, are not added as dimentions,
