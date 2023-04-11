@@ -2,8 +2,16 @@ import math
 
 class Vector:
 
-    def __init__(self, array: list) -> None:
-        self.values = array
+    def __init__(self, sparse_vector: list, dimentions: int) -> None:
+        """
+        array: list[tuple], is a sparse vector datastructure
+        """
+        # converting sprase vector to dense vector
+        self.values = [0 for _ in range(dimentions)]
+
+        for index, value in sparse_vector:
+            self.values[index] = value
+    
     
     def magnitude(self) -> float:
         mag = 0

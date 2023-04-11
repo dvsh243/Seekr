@@ -1,5 +1,6 @@
 import collections
 import math
+from seekr.utils import to_sparse
 # import numpy as np
 
 
@@ -20,11 +21,11 @@ class TfidfVectorizer:
         pass
 
 
-    def fit_transform(self, corpus: list, analyzer: callable) -> list[list]:
+    def fit_transform(self, corpus: list, analyzer: callable, skip_k: int = 1) -> list[list]:
         self.totalDocs = len(corpus)
         self.analyzer: callable = analyzer
         
-        self.featureMap = self.get_feature_map(corpus, k = 1)
+        self.featureMap = self.get_feature_map(corpus, k = skip_k)
         self.featureDocCnt = self.get_feature_doc_count(corpus)
 
         self.matrix = self.create_matrix(corpus)
@@ -38,8 +39,7 @@ class TfidfVectorizer:
         for i, document in enumerate(corpus):
             if i % 100 == 0: print(f"completed {str((i / self.totalDocs) * 100)[:5]} %", end='\r')
 
-            matrix.append( self.doc_to_vector(document) )
-            print(matrix[-1])
+            matrix.append( to_sparse( self.doc_to_vector(document) ) )  # stores a sparse vector
 
         return matrix
         # return np.matrix(matrix)  # conversion to numpy matrix takes alot of time
