@@ -32,7 +32,7 @@ def actual_euclidian_distance(vector1, vector2) -> float:
     return math.sqrt(dist)
 
 
-# def false_euclidian_distance(vector1, vector2) -> float:
+# def euclidian_distance(vector1, vector2) -> float:
 #         dist = 0
 #         doc_indexToValue = {index: value for index, value in vector2}
 
