@@ -1,52 +1,112 @@
 import json
 import math
 import random
+import collections
 
 
 class TreeNode:
     
-    def __init__(self, vector: list[tuple] = None) -> None:
+    def __init__(self, vector: list = None, leaf_vectors: list = []) -> None:
         self.vector = vector
+        self.leaf_vectors = leaf_vectors  # only populate for leaf nodes
+
         self.left = None
         self.right = None 
     
     def __repr__(self) -> str:
-        return f"<TreeNode: [{self.vector}]>"
+        return f"<TreeNode: {self.vector[:3]}...>" if self.vector else f"<TreeNode: ROOT>"
     
 
 
 class ANN:
 
-    def __init__(self) -> None:
+    def __init__(self, matrix: list) -> None:
         self.root = TreeNode()
-
-        with open('seekr/indexes/test_vectors.json') as f:
-            self.matrix = json.load(f)
-
+        self.matrix = matrix
+        
         self.create_index()
 
 
     def create_index(self):
         
-        for center in self.create_random_centers():
-            print(f"center ---> {center[:3]}...")
+        root_centers, children_indexes = self.create_random_centers(self.matrix)
+
+        self.root = TreeNode()
+        self.root.left = TreeNode(root_centers[0])
+        self.root.right = TreeNode(root_centers[1])
+
+        print("root", self.root); print("root left", self.root.left); print("root right", self.root.right, end='\n\n')
+
+        print("populating root.left")
+        self.populate_tree(
+            self.root.left, 
+            children_indexes[0]
+        )
+
+        print("populating root.right")
+        self.populate_tree(
+            self.root.right, 
+            children_indexes[1]
+        )
 
 
-    def create_random_centers(self, N: int  = 2) -> list:
-        centers = [random.choice(self.matrix) for _ in range(N)]
-        # print("choosing 2 random centers.")
-        # for vector in centers: print("vector -> ", vector[:4], "...")
+    def populate_tree(self, node: TreeNode, children_indexes: list[int]):
+        print("\npopulate tree func() called.")
+
+        scope_matrix = [self.matrix[i] for i in children_indexes]
+
+        # base case
+        if len(scope_matrix) < 2000:
+            print(f"[{len(scope_matrix)} vectors] base case reached.")
+            return TreeNode(node, leaf_vectors = scope_matrix)
+        
+        # else, split into 2 centers
+        centers, scope_children_indexes = self.create_random_centers(scope_matrix)
+
+
+
+
+
+
+    # def populate_tree(self, node: TreeNode, children_indexes: list[int]):
+    #     print("\npopulate tree func() called.")
+        
+    #     # list of all the vectors which were closer to this center vector
+    #     scope_matrix = [self.matrix[i] for i in children_indexes]
+
+    #     # base case
+    #     if len(scope_matrix) < 2000:
+    #         print(f"[{len(scope_matrix)} vectors] base case reached.")
+    #         return TreeNode(node, leaf_vectors = scope_matrix)
+    
+    #     # else, recalculate centers in the scope matrix
+    #     centers, scope_children_indexes = self.create_random_centers(scope_matrix)
+        
+    #     node.left = TreeNode(centers[0])
+    #     print("calling on left.")
+    #     self.populate_tree(node.left, scope_children_indexes[0])
+
+    #     node.right = TreeNode(centers[1])
+    #     print("calling on right.")
+    #     self.populate_tree(node.right, scope_children_indexes[0])
+
+
+
+    def create_random_centers(self, matrix: list, N: int  = 2) -> tuple[list, dict]:
+        centers = [random.choice(matrix) for _ in range(N)]
 
         center_count = [0 for _ in range(N)]
+        children_indexes = collections.defaultdict(list)
 
-        for vector in self.matrix:
+        for i, vector in enumerate(matrix):
             center_index, distance = ANN.get_closest_center(centers, vector)
             center_count[center_index] += 1
+            children_indexes[center_index].append(i)
         
-        print("random centers created")
+        print("random centers created.")
         print("no. of vectors in centers ->", center_count)
 
-        return centers
+        return centers, children_indexes
 
 
 
@@ -88,5 +148,9 @@ class ANN:
         return math.sqrt(dist)
     
 
+
 if __name__ == '__main__':
-    ANN()
+    
+    with open('seekr/indexes/test_vectors.json') as f:
+        matrix = json.load(f)
+    ANN(matrix)
