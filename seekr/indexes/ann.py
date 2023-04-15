@@ -2,16 +2,19 @@ import json
 import math
 import random
 import collections
+import time
+import heapq
 
 
 class TreeNode:
     
-    def __init__(self, vector: list = None, leaf_vectors: list = []) -> None:
+    def __init__(self, vector: list = None, leaf_vectors: list = [], is_leaf: bool = False) -> None:
         self.vector = vector
         self.leaf_vectors = leaf_vectors  # only populate for leaf nodes
 
         self.left = None
         self.right = None 
+        self.is_leaf = is_leaf
     
     def __repr__(self) -> str:
         return f"<TreeNode: {self.vector[:3]}...>" if self.vector else f"<TreeNode: ROOT>"
@@ -28,67 +31,39 @@ class ANN:
 
 
     def create_index(self):
+        print(f"creating index of {len(self.matrix)} vectors.")
+        start_time = time.perf_counter()
         
         root_centers, children_indexes = self.create_random_centers(self.matrix)
-
+        
         self.root = TreeNode()
-        self.root.left = TreeNode(root_centers[0])
-        self.root.right = TreeNode(root_centers[1])
+        self.root.left = self.populate_tree(root_centers[0], children_indexes[0])
+        self.root.right = self.populate_tree(root_centers[1], children_indexes[1])
 
-        print("root", self.root); print("root left", self.root.left); print("root right", self.root.right, end='\n\n')
+        print("self.root.left", self.root.left); print("self.root.right", self.root.right)
 
-        print("populating root.left")
-        self.populate_tree(
-            self.root.left, 
-            children_indexes[0]
-        )
-
-        print("populating root.right")
-        self.populate_tree(
-            self.root.right, 
-            children_indexes[1]
-        )
+        print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
 
-    def populate_tree(self, node: TreeNode, children_indexes: list[int]):
-        print("\npopulate tree func() called.")
 
+    def populate_tree(self, center_vector: list, children_indexes: list[int], depth = 0) -> TreeNode:
+        print(f"\n[{depth}] populate tree func() called.")
         scope_matrix = [self.matrix[i] for i in children_indexes]
 
         # base case
         if len(scope_matrix) < 2000:
-            print(f"[{len(scope_matrix)} vectors] base case reached.")
-            return TreeNode(node, leaf_vectors = scope_matrix)
+            print(f"base case reached [{len(scope_matrix)} vectors].")
+            return TreeNode(vector = center_vector, leaf_vectors = scope_matrix, is_leaf = True)
         
         # else, split into 2 centers
         centers, scope_children_indexes = self.create_random_centers(scope_matrix)
 
+        node = TreeNode(vector = center_vector)
+        node.left = self.populate_tree(centers[0], scope_children_indexes[0], depth + 1)
+        node.right = self.populate_tree(centers[1], scope_children_indexes[1], depth + 1)
 
+        return node
 
-
-
-
-    # def populate_tree(self, node: TreeNode, children_indexes: list[int]):
-    #     print("\npopulate tree func() called.")
-        
-    #     # list of all the vectors which were closer to this center vector
-    #     scope_matrix = [self.matrix[i] for i in children_indexes]
-
-    #     # base case
-    #     if len(scope_matrix) < 2000:
-    #         print(f"[{len(scope_matrix)} vectors] base case reached.")
-    #         return TreeNode(node, leaf_vectors = scope_matrix)
-    
-    #     # else, recalculate centers in the scope matrix
-    #     centers, scope_children_indexes = self.create_random_centers(scope_matrix)
-        
-    #     node.left = TreeNode(centers[0])
-    #     print("calling on left.")
-    #     self.populate_tree(node.left, scope_children_indexes[0])
-
-    #     node.right = TreeNode(centers[1])
-    #     print("calling on right.")
-    #     self.populate_tree(node.right, scope_children_indexes[0])
 
 
 
@@ -107,6 +82,31 @@ class ANN:
         print("no. of vectors in centers ->", center_count)
 
         return centers, children_indexes
+
+
+
+    def find_leaf(self, target_vector: list) -> TreeNode:
+        depth = 0
+        node = self.root
+
+        print(f"searching for target_vector -> {target_vector[:4]}")
+        
+        while node:
+            if node.is_leaf: return node.leaf_vectors
+
+            if (
+                ANN.actual_euclidian_distance(node.left.vector, target_vector) < \
+                ANN.actual_euclidian_distance(node.right.vector, target_vector)
+            ):
+                print("go left", depth)
+                node = node.left
+        
+            else:
+                print("go right", depth)
+                node = node.right
+            
+            depth += 1
+                
 
 
 
@@ -148,9 +148,42 @@ class ANN:
         return math.sqrt(dist)
     
 
+    @staticmethod
+    def find_closest_vectors(target_vector: list, scope_matrix: list, N: int = 3) -> list:
+
+        minHeap = []
+
+        for vector in scope_matrix:
+            distance = ANN.actual_euclidian_distance(target_vector, vector)
+            heapq.heappush(minHeap, (distance, vector))
+
+        closest = []
+        for i in range(N):
+            distance, vector = heapq.heappop(minHeap)
+            closest.append( (distance, vector) )
+        
+        return closest
+
 
 if __name__ == '__main__':
     
     with open('seekr/indexes/test_vectors.json') as f:
         matrix = json.load(f)
-    ANN(matrix)
+
+    index = ANN(matrix[:6000])
+
+    leaf_vectors = index.find_leaf(matrix[159])
+    print(f"need to compare to {len(leaf_vectors)} leaf_vectors.")
+    print(f"example leaf_vector -> {leaf_vectors[0]}")
+
+
+
+    print("closest vectors by exhaustive search :-")
+    start_time = time.perf_counter()
+    ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = matrix)
+    print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
+
+    print("closest vectors by indexed search :-")
+    start_time = time.perf_counter()
+    ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = leaf_vectors)
+    print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
