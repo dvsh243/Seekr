@@ -18,7 +18,7 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 5000)
+        self.db = DB(location, 4000)
         self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         self.vectorize()
@@ -33,7 +33,7 @@ class Seekr:
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
             analyzer = ngrams,
-            skip_k = 3,
+            skip_k = 0,
         )
         self.totalFeatures = self.vectorizer.featureIndex
 
@@ -49,7 +49,7 @@ class Seekr:
         similarity = []  # min heap
 
         for index, doc_vector in enumerate(self.vectorizer.matrix):
-            if index % 100 == 0: print(f"compared {str((index / len(self.corpus)) * 100)[:5]} %", end='\r')
+            # if index % 100 == 0: print(f"compared {str((index / len(self.corpus)) * 100)[:5]} %", end='\r')
 
             heapq.heappush(
                 similarity,
@@ -66,6 +66,7 @@ class Seekr:
         for _ in range( min(len(similarity), limit) ):
             sim_value, index = heapq.heappop(similarity)
             res.append( (sim_value, self.db.rows[index]) )
+            print(index)
         return res
 
     
@@ -73,8 +74,10 @@ class Seekr:
         target = cleanDocument(target)
         target_vector = self.vectorizer.doc_to_vector(target)
         scope_matrix = self.BTreeIndex.find_leaf(target_vector)
+        print(f"found {len(scope_matrix)} vectors to search.")
 
         res = []
         for distance, index, vector in ANN.find_closest_vectors(target_vector, scope_matrix):
             res.append( (distance, self.db.rows[index]) )
+            print(index)
         return res

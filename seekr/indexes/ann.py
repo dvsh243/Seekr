@@ -26,7 +26,7 @@ class ANN:
     def __init__(self, matrix: list) -> None:
         self.root = TreeNode()
         self.matrix = matrix
-        self.minimumLeafCount = 500  # number of vectors the leaf node in the index tree will hold
+        self.minimumLeafCount = 2000  # number of vectors the leaf node in the index tree will hold
         
         self.create_index()
 
@@ -154,7 +154,7 @@ class ANN:
 
         minHeap = []
 
-        for index, vector in enumerate(scope_matrix):
+        for index, vector in enumerate(scope_matrix):  # wrong index!!
             distance = ANN.actual_euclidian_distance(target_vector, vector)
             heapq.heappush(minHeap, (distance, index, vector))
 
