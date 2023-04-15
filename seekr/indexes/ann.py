@@ -26,6 +26,7 @@ class ANN:
     def __init__(self, matrix: list) -> None:
         self.root = TreeNode()
         self.matrix = matrix
+        self.minimumLeafCount = 200  # number of vectors the leaf node in the index tree will hold
         
         self.create_index()
 
@@ -40,19 +41,19 @@ class ANN:
         self.root.left = self.populate_tree(root_centers[0], children_indexes[0])
         self.root.right = self.populate_tree(root_centers[1], children_indexes[1])
 
-        print("self.root.left", self.root.left); print("self.root.right", self.root.right)
+        # print("self.root.left", self.root.left); print("self.root.right", self.root.right)
 
         print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
 
 
     def populate_tree(self, center_vector: list, children_indexes: list[int], depth = 0) -> TreeNode:
-        print(f"\n[{depth}] populate tree func() called.")
+        # print(f"\n[{depth}] populate tree func() called.")
         scope_matrix = [self.matrix[i] for i in children_indexes]
 
         # base case
-        if len(scope_matrix) < 2000:
-            print(f"base case reached [{len(scope_matrix)} vectors].")
+        if len(scope_matrix) < self.minimumLeafCount:
+            # print(f"base case reached [{len(scope_matrix)} vectors].")
             return TreeNode(vector = center_vector, leaf_vectors = scope_matrix, is_leaf = True)
         
         # else, split into 2 centers
@@ -78,8 +79,8 @@ class ANN:
             center_count[center_index] += 1
             children_indexes[center_index].append(i)
         
-        print("random centers created.")
-        print("no. of vectors in centers ->", center_count)
+        # print("random centers created.")
+        # print("no. of vectors in centers ->", center_count)
 
         return centers, children_indexes
 
@@ -89,7 +90,7 @@ class ANN:
         depth = 0
         node = self.root
 
-        print(f"searching for target_vector -> {target_vector[:4]}")
+        # print(f"searching for target_vector -> {target_vector[:4]}")
         
         while node:
             if node.is_leaf: return node.leaf_vectors
@@ -98,11 +99,11 @@ class ANN:
                 ANN.actual_euclidian_distance(node.left.vector, target_vector) < \
                 ANN.actual_euclidian_distance(node.right.vector, target_vector)
             ):
-                print("go left", depth)
+                # print("go left", depth)
                 node = node.left
         
             else:
-                print("go right", depth)
+                # print("go right", depth)
                 node = node.right
             
             depth += 1
@@ -170,11 +171,11 @@ if __name__ == '__main__':
     with open('seekr/indexes/test_vectors.json') as f:
         matrix = json.load(f)
 
-    index = ANN(matrix[:6000])
-
+    index = ANN(matrix[:3000])
     leaf_vectors = index.find_leaf(matrix[159])
-    print(f"need to compare to {len(leaf_vectors)} leaf_vectors.")
-    print(f"example leaf_vector -> {leaf_vectors[0]}")
+
+    # print(f"need to compare to {len(leaf_vectors)} leaf_vectors.")
+    # print(f"example leaf_vector -> {leaf_vectors[0]}")
 
 
 
@@ -183,7 +184,9 @@ if __name__ == '__main__':
     ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = matrix)
     print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
+
     print("closest vectors by indexed search :-")
     start_time = time.perf_counter()
     ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = leaf_vectors)
     print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
+
