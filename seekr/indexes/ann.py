@@ -8,9 +8,9 @@ import heapq
 
 class TreeNode:
     
-    def __init__(self, vector: list = None, leaf_vectors: list = [], is_leaf: bool = False) -> None:
+    def __init__(self, vector: list = None, leaf_indexes: list = [], is_leaf: bool = False) -> None:
         self.vector = vector
-        self.leaf_vectors = leaf_vectors  # only populate for leaf nodes
+        self.leaf_indexes = leaf_indexes  # only populate for leaf nodes
 
         self.left = None
         self.right = None 
@@ -54,7 +54,7 @@ class ANN:
         # base case
         if len(scope_matrix) < self.minimumLeafCount:
             # print(f"base case reached [{len(scope_matrix)} vectors].")
-            return TreeNode(vector = center_vector, leaf_vectors = scope_matrix, is_leaf = True)
+            return TreeNode(vector = center_vector, leaf_indexes = children_indexes, is_leaf = True)
         
         # else, split into 2 centers
         centers, scope_children_indexes = self.create_random_centers(scope_matrix)
@@ -93,7 +93,7 @@ class ANN:
         # print(f"searching for target_vector -> {target_vector[:4]}")
         
         while node:
-            if node.is_leaf: return node.leaf_vectors
+            if node.is_leaf: return node.leaf_indexes
 
             if (
                 ANN.actual_euclidian_distance(node.left.vector, target_vector) < \
@@ -108,6 +108,22 @@ class ANN:
             
             depth += 1
                 
+
+    def find_closest_vectors(self, target_vector: list, leaf_indexes: list, N: int = 3) -> list:
+
+        scope_matrix = [self.matrix[i] for i in leaf_indexes]
+        minHeap = []
+
+        for index, vector in zip(leaf_indexes, scope_matrix):  # wrong index!!
+            distance = ANN.actual_euclidian_distance(target_vector, vector)
+            heapq.heappush(minHeap, (distance, index, vector))
+
+        closest = []
+        for i in range(N):
+            distance, index, vector = heapq.heappop(minHeap)
+            closest.append( (distance, index, vector) )
+        
+        return closest
 
 
 
@@ -149,21 +165,7 @@ class ANN:
         return math.sqrt(dist)
     
 
-    @staticmethod
-    def find_closest_vectors(target_vector: list, scope_matrix: list, N: int = 3) -> list:
 
-        minHeap = []
-
-        for index, vector in enumerate(scope_matrix):  # wrong index!!
-            distance = ANN.actual_euclidian_distance(target_vector, vector)
-            heapq.heappush(minHeap, (distance, index, vector))
-
-        closest = []
-        for i in range(N):
-            distance, index, vector = heapq.heappop(minHeap)
-            closest.append( (distance, index, vector) )
-        
-        return closest
 
 '''
 if __name__ == '__main__':
@@ -172,10 +174,10 @@ if __name__ == '__main__':
         matrix = json.load(f)
 
     index = ANN(matrix[:3000])
-    leaf_vectors = index.find_leaf(matrix[159])
+    leaf_indexes = index.find_leaf(matrix[159])
 
-    # print(f"need to compare to {len(leaf_vectors)} leaf_vectors.")
-    # print(f"example leaf_vector -> {leaf_vectors[0]}")
+    # print(f"need to compare to {len(leaf_indexes)} leaf_indexes.")
+    # print(f"example leaf_vector -> {leaf_indexes[0]}")
 
 
 
@@ -187,7 +189,7 @@ if __name__ == '__main__':
 
     print("closest vectors by indexed search :-")
     start_time = time.perf_counter()
-    ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = leaf_vectors)
+    ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = leaf_indexes)
     print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
 '''

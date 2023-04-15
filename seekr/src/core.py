@@ -18,8 +18,12 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 4000)
-        self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
+        self.db = DB(location, 15000)
+        # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
+
+        for x in self.db.rows:
+            if len(x[column]) < 3: continue
+            self.corpus.append( cleanDocument(x[column]) )
 
         self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
@@ -33,7 +37,7 @@ class Seekr:
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
             analyzer = ngrams,
-            skip_k = 0,
+            skip_k = 5,
         )
         self.totalFeatures = self.vectorizer.featureIndex
 
@@ -66,18 +70,16 @@ class Seekr:
         for _ in range( min(len(similarity), limit) ):
             sim_value, index = heapq.heappop(similarity)
             res.append( (sim_value, self.db.rows[index]) )
-            print(index)
         return res
 
     
     def get_indexes_matches(self, target: str, limit: int = 3):
         target = cleanDocument(target)
         target_vector = self.vectorizer.doc_to_vector(target)
-        scope_matrix = self.BTreeIndex.find_leaf(target_vector)
-        print(f"found {len(scope_matrix)} vectors to search.")
+        leaf_indexes = self.BTreeIndex.find_leaf(target_vector)
+        # print(f"found {len(leaf_indexes)} vectors to search.\nleaf_indexes -> {leaf_indexes[:5]}")
 
         res = []
-        for distance, index, vector in ANN.find_closest_vectors(target_vector, scope_matrix):
+        for distance, index, vector in self.BTreeIndex.find_closest_vectors(target_vector, leaf_indexes):
             res.append( (distance, self.db.rows[index]) )
-            print(index)
         return res
