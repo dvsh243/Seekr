@@ -33,6 +33,32 @@ class Vector:
             dist += math.pow(value - doc_indexToValue.get(index, 0), 2)
         
         return math.sqrt(dist)
+    
+
+    @staticmethod
+    def actual_euclidian_distance(vector1, vector2) -> float:
+        """
+        vector1 -> [(3, 0.53612), (7, 1.518630)]
+        vector2 -> [(0, 0.910361), (7, 2.11983), (9, 0.21591), (14, 1.85192)]
+        common = {0: (0, 0.910361), 3: (0.53612, 0), 7: (1.518630, 2.11983) ...}
+        """
+        vector1_map = {index: value for index, value in vector1.values}
+        vector2_map = {index: value for index, value in vector2.values}
+        common = {}
+
+        for index, value in vector1_map.items():
+            common[index] = (value, vector2_map.get(index, 0))
+
+        for index, value in vector2_map.items():
+            if index not in common:
+                common[index] = (0, value)
+
+        dist = 0
+        for _, (value1, value2) in common.items():
+            dist += math.pow(value2 - value1, 2)
+
+        return math.sqrt(dist)
+    
      
     
     def __repr__(self) -> str:

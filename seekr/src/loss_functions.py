@@ -39,7 +39,8 @@ class distance():
         target = Vector(vector1, dimentions)
         doc = Vector(vector2, dimentions)
 
-        return Vector.euclidian_distance(target, doc)
+        # return Vector.euclidian_distance(target, doc)
+        return Vector.actual_euclidian_distance(target, doc)
     
 
     def levenshtein_distance(s: str, t: str) -> int:

@@ -26,7 +26,7 @@ class ANN:
     def __init__(self, matrix: list) -> None:
         self.root = TreeNode()
         self.matrix = matrix
-        self.minimumLeafCount = 200  # number of vectors the leaf node in the index tree will hold
+        self.minimumLeafCount = 500  # number of vectors the leaf node in the index tree will hold
         
         self.create_index()
 
@@ -154,18 +154,18 @@ class ANN:
 
         minHeap = []
 
-        for vector in scope_matrix:
+        for index, vector in enumerate(scope_matrix):
             distance = ANN.actual_euclidian_distance(target_vector, vector)
-            heapq.heappush(minHeap, (distance, vector))
+            heapq.heappush(minHeap, (distance, index, vector))
 
         closest = []
         for i in range(N):
-            distance, vector = heapq.heappop(minHeap)
-            closest.append( (distance, vector) )
+            distance, index, vector = heapq.heappop(minHeap)
+            closest.append( (distance, index, vector) )
         
         return closest
 
-
+'''
 if __name__ == '__main__':
     
     with open('seekr/indexes/test_vectors.json') as f:
@@ -190,3 +190,4 @@ if __name__ == '__main__':
     ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = leaf_vectors)
     print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
+'''
