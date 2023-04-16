@@ -65,19 +65,28 @@ class ANN:
         return node
 
 
-    def create_random_centers(self, matrix: list, N: int  = 2) -> tuple[list, dict]:
-        centers = [random.choice(matrix) for _ in range(N)]
-
-        center_count = [0 for _ in range(N)]
+    def create_random_centers(self, matrix: list) -> tuple[list, dict]:
+        center_count = [0, 0]
+        centers = []
         children_indexes = collections.defaultdict(list)
-
-        for i, vector in enumerate(matrix):
-            center_index, distance = ANN.get_closest_center(centers, vector)
-            center_count[center_index] += 1
-            children_indexes[center_index].append(i)
         
+        def go():
+            nonlocal centers, children_indexes
+            centers = [random.choice(matrix) for _ in range(2)]
+
+            children_indexes = collections.defaultdict(list)
+
+            for i, vector in enumerate(matrix):
+                center_index, distance = ANN.get_closest_center(centers, vector)
+                center_count[center_index] += 1
+                children_indexes[center_index].append(i)
+        
+        go()
+        while sum(center_count) / 4 > min(center_count): 
+            go()  # for dividing vectors equally
+
         # print("random centers created.")
-        # print("no. of vectors in centers ->", center_count)
+        print(f"no. of vectors in centers -> {center_count}")
 
         return centers, children_indexes
 

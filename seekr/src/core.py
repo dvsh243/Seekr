@@ -47,8 +47,8 @@ class Seekr:
         self.vectorizer = TfidfVectorizer()
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
-            analyzer = ngrams,
-            skip_k = 5,
+            analyzer = whitespace,
+            skip_k = 0,
         )
         self.totalFeatures = self.vectorizer.featureIndex
 
