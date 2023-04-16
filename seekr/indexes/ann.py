@@ -82,11 +82,13 @@ class ANN:
                 children_indexes[center_index].append(i)
         
         go()
+        count = 0
         while sum(center_count) / 4 > min(center_count): 
             go()  # for dividing vectors equally
+            count += 1
 
         # print("random centers created.")
-        print(f"no. of vectors in centers -> {center_count}")
+        print(f"clustered vectors -> {center_count} \t [re ran {count} times]")
 
         return centers, children_indexes
 

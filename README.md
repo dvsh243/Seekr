@@ -33,3 +33,5 @@ dense vector -> `[0, 0, 4.51, 0, 0, 9.23, 0, 0, 0, 0, 0]`\
 sparse vector -> `[(2, 4.51), (5, 9.23)]`
 
 - Indexed vectors using BTree will not give all the similar vectors as given by linear exhaustive searching but indexing is very time efficient.
+
+- Finding centers during indexing multiple times to achieve the most optimum vector clustering.
