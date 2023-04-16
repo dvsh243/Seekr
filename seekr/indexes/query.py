@@ -5,8 +5,8 @@ import heapq
 
 class ANNQuery(ANN):
 
-    def __init__(self, matrix: list) -> None:
-        super().__init__(matrix)
+    def __init__(self, matrix: list, min_leaf_count: int = 2000) -> None:
+        super().__init__(matrix, min_leaf_count)
 
 
     def find_leaf(self, target_vector: list) -> list:
@@ -43,7 +43,7 @@ class ANNQuery(ANN):
             heapq.heappush(minHeap, (distance, index, vector))
 
         closest = []
-        for i in range(N):
+        for i in range( min(N, len(minHeap)) ):
             distance, index, vector = heapq.heappop(minHeap)
             closest.append( (distance, index, vector) )
         

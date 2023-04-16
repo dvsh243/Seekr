@@ -22,10 +22,10 @@ class TreeNode:
 
 class ANN:
 
-    def __init__(self, matrix: list) -> None:
+    def __init__(self, matrix: list, min_leaf_count: int = 2000) -> None:
         self.root = TreeNode()
         self.matrix = matrix
-        self.minimumLeafCount = 2000  # number of vectors the leaf node in the index tree will hold
+        self.minimumLeafCount = min_leaf_count  # number of vectors the leaf node in the index tree will hold
         
         self.create_index()
 

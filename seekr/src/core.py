@@ -28,7 +28,7 @@ class Seekr:
         self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
-        self.BTreeIndex = ANNQuery(self.vectorizer.matrix)
+        self.BTreeIndex = ANNQuery(self.vectorizer.matrix, 1000)
 
     
     def load_from_array(self, input_array: list) -> None:
@@ -39,7 +39,7 @@ class Seekr:
 
         self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
-        self.BTreeIndex = ANNQuery(self.vectorizer.matrix)
+        self.BTreeIndex = ANNQuery(self.vectorizer.matrix, 100)
 
 
     def vectorize(self) -> None:
@@ -80,7 +80,7 @@ class Seekr:
         res = []
         for _ in range( min(len(similarity), limit) ):
             sim_value, index = heapq.heappop(similarity)
-            res.append( (sim_value, self.db.rows[index]) )
+            res.append( (sim_value, self.corpus[index]) )
         return res
 
     
@@ -92,5 +92,5 @@ class Seekr:
 
         res = []
         for distance, index, vector in self.BTreeIndex.find_closest_vectors(target_vector, leaf_indexes):
-            res.append( (distance, self.db.rows[index]) )
+            res.append( (distance, self.corpus[index]) )
         return res

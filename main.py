@@ -1,8 +1,18 @@
 from seekr import Seekr
+import pandas as pd
 import time
 
 seekr = Seekr()
-seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
+
+df = pd.read_csv('data/cleartrip_hotels.csv')
+# print(df.columns)
+
+raw_array = []
+for i, x in enumerate(df['property_name']):
+    # if i > 5000: break
+    if type(x) == str: raw_array.append(x)
+
+seekr.load_from_array(raw_array)
 
 
 while True:
