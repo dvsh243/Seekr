@@ -35,7 +35,7 @@ class distance():
     #     return numerator / denominator
 
 
-    def euclidian_distance(vector1: list[list], vector2: list[list], dimentions: int) -> float:
+    def euclidian_distance(vector1: list[list], vector2: list[list], dimentions: int = 0) -> float:
         target = Vector(vector1, dimentions)
         doc = Vector(vector2, dimentions)
 

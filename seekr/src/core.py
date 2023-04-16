@@ -3,7 +3,7 @@ from seekr.utils.utils import cleanDocument
 from seekr.src.vectorizer import TfidfVectorizer
 from seekr.utils.analyzers import whitespace, ngrams
 from seekr.src.loss_functions import distance
-from seekr.indexes.ann import ANN
+from seekr.indexes.query import ANNQuery
 import heapq
 import time
 
@@ -18,7 +18,7 @@ class Seekr:
     def load_from_db(self, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 15000)
+        self.db = DB(location, 10000)
         # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         for x in self.db.rows:
@@ -28,7 +28,18 @@ class Seekr:
         self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
-        self.BTreeIndex = ANN(self.vectorizer.matrix)
+        self.BTreeIndex = ANNQuery(self.vectorizer.matrix)
+
+    
+    def load_from_array(self, input_array: list) -> None:
+        start_time = time.perf_counter()
+
+        for x in input_array:
+            self.corpus.append( cleanDocument(x) )
+
+        self.vectorize()
+        print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
+        self.BTreeIndex = ANNQuery(self.vectorizer.matrix)
 
 
     def vectorize(self) -> None:

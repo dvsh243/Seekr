@@ -1,9 +1,8 @@
-import json
 import math
 import random
 import collections
 import time
-import heapq
+from seekr.src.loss_functions import distance as Distance
 
 
 class TreeNode:
@@ -66,8 +65,6 @@ class ANN:
         return node
 
 
-
-
     def create_random_centers(self, matrix: list, N: int  = 2) -> tuple[list, dict]:
         centers = [random.choice(matrix) for _ in range(N)]
 
@@ -85,111 +82,14 @@ class ANN:
         return centers, children_indexes
 
 
-
-    def find_leaf(self, target_vector: list) -> TreeNode:
-        depth = 0
-        node = self.root
-
-        # print(f"searching for target_vector -> {target_vector[:4]}")
-        
-        while node:
-            if node.is_leaf: return node.leaf_indexes
-
-            if (
-                ANN.actual_euclidian_distance(node.left.vector, target_vector) < \
-                ANN.actual_euclidian_distance(node.right.vector, target_vector)
-            ):
-                # print("go left", depth)
-                node = node.left
-        
-            else:
-                # print("go right", depth)
-                node = node.right
-            
-            depth += 1
-                
-
-    def find_closest_vectors(self, target_vector: list, leaf_indexes: list, N: int = 3) -> list:
-
-        scope_matrix = [self.matrix[i] for i in leaf_indexes]
-        minHeap = []
-
-        for index, vector in zip(leaf_indexes, scope_matrix):  # wrong index!!
-            distance = ANN.actual_euclidian_distance(target_vector, vector)
-            heapq.heappush(minHeap, (distance, index, vector))
-
-        closest = []
-        for i in range(N):
-            distance, index, vector = heapq.heappop(minHeap)
-            closest.append( (distance, index, vector) )
-        
-        return closest
-
-
-
     @staticmethod
     def get_closest_center(centers: list[list], vector: list):
         """which center is this vector closer to"""
         closer = (None, float('inf'))  # (center_index, distance) pair
 
         for center_index, center_vector in enumerate(centers):
-            distance = ANN.actual_euclidian_distance(center_vector, vector)
+            distance = Distance.euclidian_distance(center_vector, vector)
             if distance < closer[1]:
                 closer = (center_index, distance)
 
         return closer
-    
-
-    @staticmethod
-    def actual_euclidian_distance(vector1, vector2) -> float:
-        """
-        vector1 -> [(3, 0.53612), (7, 1.518630)]
-        vector2 -> [(0, 0.910361), (7, 2.11983), (9, 0.21591), (14, 1.85192)]
-        common = {0: (0, 0.910361), 3: (0.53612, 0), 7: (1.518630, 2.11983) ...}
-        """
-        vector1_map = {index: value for index, value in vector1}
-        vector2_map = {index: value for index, value in vector2}
-        common = {}
-
-        for index, value in vector1_map.items():
-            common[index] = (value, vector2_map.get(index, 0))
-
-        for index, value in vector2_map.items():
-            if index not in common:
-                common[index] = (0, value)
-
-        dist = 0
-        for _, (value1, value2) in common.items():
-            dist += math.pow(value2 - value1, 2)
-
-        return math.sqrt(dist)
-    
-
-
-
-'''
-if __name__ == '__main__':
-    
-    with open('seekr/indexes/test_vectors.json') as f:
-        matrix = json.load(f)
-
-    index = ANN(matrix[:3000])
-    leaf_indexes = index.find_leaf(matrix[159])
-
-    # print(f"need to compare to {len(leaf_indexes)} leaf_indexes.")
-    # print(f"example leaf_vector -> {leaf_indexes[0]}")
-
-
-
-    print("closest vectors by exhaustive search :-")
-    start_time = time.perf_counter()
-    ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = matrix)
-    print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
-
-
-    print("closest vectors by indexed search :-")
-    start_time = time.perf_counter()
-    ANN.find_closest_vectors(target_vector = matrix[159], scope_matrix = leaf_indexes)
-    print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
-
-'''
