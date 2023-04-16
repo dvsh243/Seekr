@@ -31,3 +31,5 @@ vector of `"!J INC"` will have same euclidian distance to its similar vectors as
 - `self.matrix` in `TfidfVectorizer` stores sparse vectors instead of dense vectors for memory optimization but there is no indexing of matrix.\
 dense vector -> `[0, 0, 4.51, 0, 0, 9.23, 0, 0, 0, 0, 0]`\
 sparse vector -> `[(2, 4.51), (5, 9.23)]`
+
+- Indexed vectors using BTree will not give all the similar vectors as given by linear exhaustive searching but indexing is very time efficient.
