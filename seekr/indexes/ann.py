@@ -68,11 +68,12 @@ class ANN:
     def create_random_centers(self, matrix: list) -> tuple[list, dict]:
         center_count = [0, 0]
         centers = []
-        children_indexes = collections.defaultdict(list)
+        children_indexes = {}
         
         def go():
-            nonlocal centers, children_indexes
+            nonlocal centers, children_indexes, center_count
             centers = [random.choice(matrix) for _ in range(2)]
+            center_count = [0, 0]
 
             children_indexes = collections.defaultdict(list)
 
@@ -83,7 +84,7 @@ class ANN:
         
         go()
         count = 0
-        while sum(center_count) / 4 > min(center_count): 
+        while sum(center_count) / 5 > min(center_count): 
             go()  # for dividing vectors equally
             count += 1
 
