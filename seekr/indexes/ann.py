@@ -84,7 +84,7 @@ class ANN:
         
         go()
         count = 0
-        while sum(center_count) / 8 > min(center_count): 
+        while sum(center_count) / 8 > min(center_count):  # find a better way?
             go()  # for dividing vectors equally
             count += 1
 
