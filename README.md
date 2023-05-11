@@ -35,3 +35,5 @@ sparse vector -> `[(2, 4.51), (5, 9.23)]`
 - Indexed vectors using BTree will not give all the similar vectors as given by linear exhaustive searching but indexing is very time efficient.
 
 - Finding centers during indexing multiple times to achieve the most optimum vector clustering.
+
+- `sensitivity` of ANN which describes the ratio of distribution of vectors on either side of the hyperplane. Increasing the sensitivity can slower the index creation.
