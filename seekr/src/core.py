@@ -3,7 +3,7 @@ from seekr.utils.utils import cleanDocument
 from seekr.src.vectorizer import TfidfVectorizer
 from seekr.utils.analyzers import whitespace, ngrams
 from seekr.src.loss_functions import distance
-from seekr.indexes.query import ANNQuery
+from seekr.index.query import ANNQuery
 import heapq
 import time
 

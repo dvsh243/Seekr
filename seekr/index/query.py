@@ -1,4 +1,4 @@
-from seekr.indexes.ann import ANN
+from seekr.index.ann import ANN
 from seekr.src.loss_functions import distance as Distance
 import heapq
 
