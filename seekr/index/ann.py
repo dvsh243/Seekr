@@ -22,9 +22,10 @@ class TreeNode:
 
 class ANN:
 
-    def __init__(self, matrix: list, min_leaf_count: int = 2000) -> None:
+    def __init__(self, matrix: list, min_leaf_count: int = 2000, sensitivity: float = 0.10) -> None:
         self.root = TreeNode()
         self.matrix = matrix
+        self.sensitivity = 1 - sensitivity  # less sensitive = faster index creation
         self.minimumLeafCount = min_leaf_count  # number of vectors the leaf node in the index tree will hold
         
         self.create_index()
@@ -84,7 +85,7 @@ class ANN:
         
         go()
         count = 0
-        while sum(center_count) / 8 > min(center_count):  # find a better way?
+        while sum(center_count) / (self.sensitivity * 100) > min(center_count):  # more [/12] = faster query
             go()  # for dividing vectors equally
             count += 1
 

@@ -6,6 +6,8 @@ from seekr.src.loss_functions import distance
 from seekr.index.query import ANNQuery
 import heapq
 import time
+from seekr.src.query import Query
+
 
 
 class Seekr:
@@ -53,44 +55,32 @@ class Seekr:
         self.totalFeatures = self.vectorizer.featureIndex
 
     
-    def __repr__(self) -> str:
-        return f"<Seekr Object [{len(self.corpus)} items]>"
-    
-
-    def get_matches(self, target: str, limit: int = 3):
-        target = cleanDocument(target)
-        target_vector = self.vectorizer.doc_to_vector(target)
-
-        similarity = []  # min heap
-
-        for index, doc_vector in enumerate(self.vectorizer.matrix):
-            # if index % 100 == 0: print(f"compared {str((index / len(self.corpus)) * 100)[:5]} %", end='\r')
-
-            heapq.heappush(
-                similarity,
-                ( distance.euclidian_distance(
-                        vector1 = target_vector, 
-                        vector2 = doc_vector, 
-                        dimentions = self.totalFeatures,
-                    ), 
-                    index 
-                )
+    def query(self, target: str, limit: int = 3, index_type: str = 'linear'):
+        query = Query(
+                self.corpus, 
+                self.vectorizer, 
+                self.BTreeIndex, 
+                self.totalFeatures, 
+                limit
+            )
+        
+        return query.query(
+                target, 
+                index_type = index_type
             )
 
-        res = []
-        for _ in range( min(len(similarity), limit) ):
-            sim_value, index = heapq.heappop(similarity)
-            res.append( (sim_value, self.corpus[index]) )
-        return res
+    
+    def __repr__(self) -> str:
+        return f"<Seekr Object [{len(self.corpus)} items]>"
 
     
-    def get_indexes_matches(self, target: str, limit: int = 3):
-        target = cleanDocument(target)
-        target_vector = self.vectorizer.doc_to_vector(target)
-        leaf_indexes = self.BTreeIndex.find_leaf(target_vector)
-        # print(f"found {len(leaf_indexes)} vectors to search.\nleaf_indexes -> {leaf_indexes[:5]}")
+    # def get_indexes_matches(self, target: str, limit: int = 3):
+    #     target = cleanDocument(target)
+    #     target_vector = self.vectorizer.doc_to_vector(target)
+    #     leaf_indexes = self.BTreeIndex.find_leaf(target_vector)
+    #     # print(f"found {len(leaf_indexes)} vectors to search.\nleaf_indexes -> {leaf_indexes[:5]}")
 
-        res = []
-        for distance, index, vector in self.BTreeIndex.find_closest_vectors(target_vector, leaf_indexes):
-            res.append( (distance, self.corpus[index]) )
-        return res
+    #     res = []
+    #     for distance, index, vector in self.BTreeIndex.find_closest_vectors(target_vector, leaf_indexes):
+    #         res.append( (distance, self.corpus[index]) )
+    #     return res

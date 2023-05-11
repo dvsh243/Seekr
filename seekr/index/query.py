@@ -6,7 +6,7 @@ import heapq
 class ANNQuery(ANN):
 
     def __init__(self, matrix: list, min_leaf_count: int = 2000) -> None:
-        super().__init__(matrix, min_leaf_count)
+        super().__init__(matrix, min_leaf_count, sensitivity=0.80)
 
 
     def find_leaf(self, target_vector: list) -> list:
@@ -38,7 +38,7 @@ class ANNQuery(ANN):
         scope_matrix = [self.matrix[i] for i in leaf_indexes]
         minHeap = []
 
-        for index, vector in zip(leaf_indexes, scope_matrix):  # wrong index!!
+        for index, vector in zip(leaf_indexes, scope_matrix):
             distance = Distance.euclidian_distance(target_vector, vector)
             heapq.heappush(minHeap, (distance, index, vector))
 
