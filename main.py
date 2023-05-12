@@ -1,5 +1,5 @@
 from seekr import Seekr
-import pandas as pd
+# import pandas as pd
 import time
 
 seekr = Seekr()

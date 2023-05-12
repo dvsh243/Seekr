@@ -7,7 +7,7 @@
 from seekr import Seekr
 seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
 
-matches = seekr.get_matches('Active Fund LLC', 3)
+matches = seekr.query('Active Fund LLC', limit = 3, index_type = 'linear')
 ```
 
 ## How does it work
@@ -28,7 +28,7 @@ ngrams of `"EMERGENCY"` -> `['EME', 'MER', 'ERG', 'RGE', 'GEN', 'ENC', 'NCY']`
 - During convertion of the target string to vector, `ngrams`/`whitespaces` which are not present in corpus, are not added as dimentions in the resulting vector leading to incorrect euclidian distance but optimized comparison.\
 vector of `"!J INC"` will have same euclidian distance to its similar vectors as the vector of `"!J INC )*&!)#!*)^!))!*&*"` 
 
-- `self.matrix` in `TfidfVectorizer` stores sparse vectors instead of dense vectors for memory optimization but there is no indexing of matrix.\
+- `self.matrix` in `TfidfVectorizer` stores sparse vectors instead of dense vectors for memory optimization\
 dense vector -> `[0, 0, 4.51, 0, 0, 9.23, 0, 0, 0, 0, 0]`\
 sparse vector -> `[(2, 4.51), (5, 9.23)]`
 
