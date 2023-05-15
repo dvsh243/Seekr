@@ -31,7 +31,7 @@ class ANNQuery(ANN):
 
                 depth += 1
         
-        return set(leaf_indexes)  # multiple leaf nodes of different trees can hold same index
+        return list(set(leaf_indexes))  # multiple leaf nodes of different trees can hold same index
 
     
     def find_closest_vectors(self, target_vector: list, leaf_indexes: list, N: int = 3) -> list:
