@@ -14,10 +14,10 @@ class Seekr:
         self.totalFeatures = 0
 
 
-    def load_from_db(self, location: str, column: int) -> None:
+    def load_from_db(self, db_name: str, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(location, 5000)
+        self.db = DB(db_name, location, 10000)
         # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         for x in self.db.rows:
@@ -30,25 +30,14 @@ class Seekr:
         self.BTreeIndex = ANNQuery(
             self.vectorizer.matrix, 
         )
-
-    
-    # def load_from_array(self, input_array: list) -> None:   # havent tested yet!
-    #     start_time = time.perf_counter()
-
-    #     for x in input_array:
-    #         self.corpus.append( cleanDocument(x) )
-
-    #     self.vectorize()
-    #     print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
-    #     self.BTreeIndex = ANNQuery(self.vectorizer.matrix, 100)
-
+        
 
     def vectorize(self) -> None:
         
         self.vectorizer = TfidfVectorizer()
         self.tfidf_matrix = self.vectorizer.fit_transform(
             corpus = self.corpus,
-            analyzer = ngrams,
+            analyzer = whitespace,
             skip_k = 0,
         )
         self.totalFeatures = self.vectorizer.featureIndex

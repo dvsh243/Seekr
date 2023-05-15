@@ -1,0 +1,4 @@
+seekr/__pycache__/*
+__pycache__/*
+*.cpython-310.pyc
+data/news.sqlite

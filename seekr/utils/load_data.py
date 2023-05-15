@@ -2,11 +2,11 @@ import sqlite3
 
 class DB:
 
-    def __init__(self, location: str, maxLimit: int = 0) -> None:
+    def __init__(self, db_name: str, location: str, maxLimit: int = 0) -> None:
         self.rows: list = []
 
         conn = sqlite3.connect(location)
-        cursor = conn.execute(f"select * from companies")
+        cursor = conn.execute(f"select * from {db_name}")
         
         if not maxLimit:
             for table in cursor.fetchall():

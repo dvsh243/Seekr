@@ -1,10 +1,10 @@
 from seekr import Seekr
-# import pandas as pd
 import time
 
 seekr = Seekr()
 
-seekr.load_from_db('data/companies.sqlite', column = 1)
+# seekr.load_from_db('companies', 'dataset/companies.sqlite', column = 1)
+seekr.load_from_db('news', 'dataset/news.sqlite', column = 2)
 
 
 while True:

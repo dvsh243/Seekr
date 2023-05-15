@@ -22,14 +22,14 @@ class TreeNode:
 
 class ANN:
 
-    def __init__(self, matrix: list, min_leaf_count: int = 2000, sensitivity: float = 0.80) -> None:
+    def __init__(self, matrix: list, min_leaf_count: int = 2000, sensitivity: float = 0.80, forest_size: int = 1) -> None:
         self.matrix = matrix
         self.sensitivity = 1 - sensitivity  # less sensitive = faster index creation
         # `sensitivity` describes the ratio distribution of vectors on each side of the hyperplane
         self.minimumLeafCount = min_leaf_count  # number of vectors the leaf node in the index tree will hold
         
         print(f"creating indexes of {len(self.matrix)} vectors.")
-        self.roots = [self.create_index() for _ in range(5)]  # forest of index trees
+        self.roots = [self.create_index() for _ in range(forest_size)]  # forest of index trees
 
 
     def create_index(self) -> TreeNode:
