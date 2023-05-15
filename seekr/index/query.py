@@ -5,32 +5,33 @@ import heapq
 
 class ANNQuery(ANN):
 
-    def __init__(self, matrix: list, min_leaf_count: int = 2000) -> None:
-        super().__init__(matrix, min_leaf_count, sensitivity=0.80)
+    def __init__(self, matrix: list, min_leaf_count: int = 1000) -> None:
+        super().__init__(matrix, min_leaf_count, sensitivity=0.70)
 
 
     def find_leaf(self, target_vector: list) -> list:
         depth = 0
-        node = self.root
+        leaf_indexes = []
 
-        # print(f"searching for target_vector -> {target_vector[:4]}")
-        
-        while node:
-            if node.is_leaf: return node.leaf_indexes
+        for i in range(len(self.roots)):
+            node = self.roots[i]
 
-            if (
-                Distance.euclidian_distance(node.left.vector, target_vector) < \
-                Distance.euclidian_distance(node.right.vector, target_vector)
-            ):
-                # print("go left", depth)
-                node = node.left
+            # print(f"searching for target_vector -> {target_vector[:4]}")
+
+            while node:
+                if node.is_leaf: 
+                    leaf_indexes.extend( node.leaf_indexes )
+                    break
+
+                if (
+                    Distance.euclidian_distance(node.left.vector, target_vector) < \
+                    Distance.euclidian_distance(node.right.vector, target_vector)
+                ): node = node.left
+                else: node = node.right
+
+                depth += 1
         
-            else:
-                # print("go right", depth)
-                node = node.right
-            
-            depth += 1
-    
+        return set(leaf_indexes)  # multiple leaf nodes of different trees can hold same index
 
     
     def find_closest_vectors(self, target_vector: list, leaf_indexes: list, N: int = 3) -> list:

@@ -27,7 +27,9 @@ class Seekr:
         self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
-        self.BTreeIndex = ANNQuery(self.vectorizer.matrix, 1000)
+        self.BTreeIndex = ANNQuery(
+            self.vectorizer.matrix, 
+        )
 
     
     # def load_from_array(self, input_array: list) -> None:   # havent tested yet!

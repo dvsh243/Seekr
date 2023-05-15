@@ -23,28 +23,26 @@ class TreeNode:
 class ANN:
 
     def __init__(self, matrix: list, min_leaf_count: int = 2000, sensitivity: float = 0.80) -> None:
-        self.root = TreeNode()
         self.matrix = matrix
         self.sensitivity = 1 - sensitivity  # less sensitive = faster index creation
         # `sensitivity` describes the ratio distribution of vectors on each side of the hyperplane
         self.minimumLeafCount = min_leaf_count  # number of vectors the leaf node in the index tree will hold
         
-        self.create_index()
+        print(f"creating indexes of {len(self.matrix)} vectors.")
+        self.roots = [self.create_index() for _ in range(5)]  # forest of index trees
 
 
-    def create_index(self):
-        print(f"creating index of {len(self.matrix)} vectors.")
+    def create_index(self) -> TreeNode:
         start_time = time.perf_counter()
         
         root_centers, children_indexes = self.create_random_centers(self.matrix)
         
-        self.root = TreeNode()
-        self.root.left = self.populate_tree(root_centers[0], children_indexes[0])
-        self.root.right = self.populate_tree(root_centers[1], children_indexes[1])
-
-        # print("self.root.left", self.root.left); print("self.root.right", self.root.right)
+        root = TreeNode()
+        root.left = self.populate_tree(root_centers[0], children_indexes[0])
+        root.right = self.populate_tree(root_centers[1], children_indexes[1])
 
         print(f"index created in {str(time.perf_counter() - start_time)[:5]} seconds.")
+        return root
 
 
 
@@ -86,12 +84,12 @@ class ANN:
         
         go()
         count = 0
-        while sum(center_count) / (self.sensitivity * 100) > min(center_count):  # more [/12] = faster query
+        while sum(center_count) / (self.sensitivity * 100) > min(center_count):  # more ((1 - self.sensitivity) * 100) = faster query, more index creation time
             go()  # for dividing vectors equally
             count += 1
 
         # print("random centers created.")
-        print(f"clustered vectors -> {center_count} \t [re ran {count} times]")
+        # print(f"clustered vectors -> {center_count} \t [re ran {count} times]")
 
         return centers, children_indexes
 
