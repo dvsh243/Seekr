@@ -3,8 +3,8 @@ import time
 
 seekr = Seekr()
 
-# seekr.load_from_db('companies', 'dataset/companies.sqlite', column = 1)
-seekr.load_from_db('news', 'dataset/news.sqlite', column = 2)
+# seekr.load_from_db('companies', 'data/companies.sqlite', column = 1)
+seekr.load_from_db('news', 'data/news.sqlite', column = 2)
 
 
 while True:

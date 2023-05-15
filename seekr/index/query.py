@@ -6,7 +6,7 @@ import heapq
 class ANNQuery(ANN):
 
     def __init__(self, matrix: list, min_leaf_count: int = 1000) -> None:
-        super().__init__(matrix, min_leaf_count, sensitivity=0.70, forest_size=3)
+        super().__init__(matrix, min_leaf_count, sensitivity=0.70, forest_size=1)
 
 
     def find_leaf(self, target_vector: list) -> list:

@@ -17,7 +17,7 @@ class Seekr:
     def load_from_db(self, db_name: str, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(db_name, location, 10000)
+        self.db = DB(db_name, location, 5000)
         # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         for x in self.db.rows:
