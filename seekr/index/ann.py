@@ -89,7 +89,7 @@ class ANN:
             count += 1
 
         # print("random centers created.")
-        # print(f"clustered vectors -> {center_count} \t [re ran {count} times]")
+        print(f"clustered vectors -> {center_count} \t [re ran {count} times]")
 
         return centers, children_indexes
 
