@@ -7,19 +7,19 @@ import heapq
 
 class Query:
 
-    def __init__(self, corpus: list, vectorizer: TfidfVectorizer, BTreeIndex: ANNQuery, totalFeatures: int, limit: int) -> None:
+    def __init__(self, corpus: list, vectorizer: TfidfVectorizer, index, totalFeatures: int, limit: int) -> None:
         self.vectorizer = vectorizer
         self.totalFeatures = totalFeatures
         self.limit = limit
         self.corpus = corpus
-        self.BTreeIndex = BTreeIndex
+        self.index = index
 
 
     def query(self, target: str, index_type: str):
 
         if index_type == 'linear':
             res = self.ExhaustiveSearch(target)
-        elif index_type == 'btree':
+        elif index_type == 'annoy':
             res = self.BTreeSearch(target)
             
         return res
@@ -55,11 +55,11 @@ class Query:
     def BTreeSearch(self, target: str):
         target = cleanDocument(target)
         target_vector = self.vectorizer.doc_to_vector(target)
-        leaf_indexes = self.BTreeIndex.find_leaf(target_vector)
+        leaf_indexes = self.index.find_leaf(target_vector)
         # print(f"found {len(leaf_indexes)} vectors to search.\nleaf_indexes -> {leaf_indexes[:5]}")
 
         res = []
-        for distance, index, vector in self.BTreeIndex.find_closest_vectors(target_vector, leaf_indexes, self.limit):
+        for distance, index, vector in self.index.find_closest_vectors(target_vector, leaf_indexes, self.limit):
             res.append( (distance, self.corpus[index]) )
         return res
 

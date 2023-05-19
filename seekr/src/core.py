@@ -12,12 +12,13 @@ class Seekr:
     def __init__(self) -> None:
         self.corpus: list = []
         self.totalFeatures = 0
+        self.index = None
 
 
     def load_from_db(self, db_name: str, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(db_name, location, 30000)
+        self.db = DB(db_name, location, 5000)
         # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         for x in self.db.rows:
@@ -27,9 +28,16 @@ class Seekr:
         self.vectorize()
         print(f"loaded {len(self.corpus)} items and vectorized in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
-        self.BTreeIndex = ANNQuery(
-            self.vectorizer.matrix, 
-        )
+
+    def create_index(self, index_type: str):
+
+        if index_type == 'annoy':
+            self.index = ANNQuery(
+                self.vectorizer.matrix, 
+            )
+        
+        elif index_type == 'kmeans':
+            pass
         
 
     def vectorize(self) -> None:
@@ -47,7 +55,7 @@ class Seekr:
         query = Query(
                 self.corpus, 
                 self.vectorizer, 
-                self.BTreeIndex, 
+                self.index, 
                 self.totalFeatures, 
                 limit
             )
