@@ -6,7 +6,7 @@
 ```python
 from seekr import Seekr
 
-seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
+seekr.load_from_db('companies', 'data/companies.sqlite', column = 1)
 seekr.create_index('annoy')   # 'annoy' or 'kmeans'
 
 matches = seekr.query('Active Fund LLC', limit = 3, index_type = 'annoy')  # 'linear', 'annoy', 'kmeans'
