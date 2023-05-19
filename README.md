@@ -5,9 +5,11 @@
 ## Usage 
 ```python
 from seekr import Seekr
-seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
 
-matches = seekr.query('Active Fund LLC', limit = 3, index_type = 'linear')
+seekr.load_from_db(location = 'data/companies.sqlite', column = 1)
+seekr.create_index('annoy')   # 'annoy' or 'kmeans'
+
+matches = seekr.query('Active Fund LLC', limit = 3, index_type = 'annoy')  # 'linear', 'annoy', 'kmeans'
 ```
 
 ## How does it work
@@ -39,4 +41,4 @@ sparse vector -> `[(2, 4.51), (5, 9.23)]`
 - `sensitivity` of ANN which describes the ratio of distribution of vectors on either side of the hyperplane. Increasing the sensitivity can slower the index creation.
 
 
-- instead of actually using the average vector of a cluster for computation, the vector closest the the average vector is chosen because of less dimensionality
+- instead of actually using the average vector of a cluster for computation, the vector closest the the average vector is chosen because of its less dimensionality
