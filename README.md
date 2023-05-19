@@ -37,3 +37,6 @@ sparse vector -> `[(2, 4.51), (5, 9.23)]`
 - Finding centers during indexing multiple times to achieve the most optimum vector clustering.
 
 - `sensitivity` of ANN which describes the ratio of distribution of vectors on either side of the hyperplane. Increasing the sensitivity can slower the index creation.
+
+
+- instead of actually using the average vector of a cluster for computation, the vector closest the the average vector is chosen because of less dimensionality

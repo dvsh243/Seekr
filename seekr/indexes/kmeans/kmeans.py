@@ -102,4 +102,4 @@ class KMeans:
         closest_vector_index = KMeans.get_closest_center(matrix, result_vector)
         return matrix[closest_vector_index]  # closest to the average
 
-        return result_vector  # actually the average
+        return result_vector  # actually the average [OPTIMIZE]
