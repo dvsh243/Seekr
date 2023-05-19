@@ -2,7 +2,8 @@ from seekr.utils.load_data import DB
 from seekr.utils.utils import cleanDocument
 from seekr.src.vectorizer import TfidfVectorizer
 from seekr.utils.analyzers import whitespace, ngrams
-from seekr.index.query import ANNQuery
+from seekr.indexes.ann.query import ANNQuery
+from seekr.indexes.kmeans.query import KMeansQuery
 import time
 from seekr.src.query import Query
 
@@ -18,7 +19,7 @@ class Seekr:
     def load_from_db(self, db_name: str, location: str, column: int) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(db_name, location, 5000)
+        self.db = DB(db_name, location, 1000)
         # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
 
         for x in self.db.rows:
@@ -37,7 +38,9 @@ class Seekr:
             )
         
         elif index_type == 'kmeans':
-            pass
+            self.index = KMeansQuery(
+                self.vectorizer.matrix
+            )
         
 
     def vectorize(self) -> None:

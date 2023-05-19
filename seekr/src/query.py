@@ -1,7 +1,6 @@
 from seekr.utils.utils import cleanDocument
 from seekr.src.loss_functions import distance
 from seekr.src.vectorizer import TfidfVectorizer
-from seekr.index.query import ANNQuery
 import heapq
 
 
@@ -21,6 +20,8 @@ class Query:
             res = self.ExhaustiveSearch(target)
         elif index_type == 'annoy':
             res = self.BTreeSearch(target)
+        elif index_type == 'kmeans':
+            res = self.KMeansSearch(target)
             
         return res
 
@@ -62,4 +63,16 @@ class Query:
         for distance, index, vector in self.index.find_closest_vectors(target_vector, leaf_indexes, self.limit):
             res.append( (distance, self.corpus[index]) )
         return res
+    
+
+    def KMeansSearch(self, target: str):
+        target = cleanDocument(target)
+        target_vector = self.vectorizer.doc_to_vector(target)
+
+        res = []
+        for distance, index in self.index.find_closest_vectors(target_vector, self.limit):
+            res.append( (distance, self.corpus[index]) )
+        return res
+
+
 

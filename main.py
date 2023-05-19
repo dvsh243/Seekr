@@ -2,10 +2,10 @@ from seekr import Seekr
 import time
 
 seekr = Seekr()
+index_type = 'kmeans'
 
 seekr.load_from_db('companies', 'data/companies.sqlite', column = 1)
-seekr.create_index('annoy')
-# seekr.load_from_db('news', 'data/news.sqlite', column = 2)
+seekr.create_index(index_type)  # 'kmeans' or 'annoy'
 
 
 while True:
@@ -15,7 +15,7 @@ while True:
 
     print("\nBTree search :-")
     start_time = time.perf_counter()
-    matches = seekr.query(target, limit = 3, index_type = 'annoy')
+    matches = seekr.query(target, limit = 3, index_type = index_type)  # replace with 'kmeans' or 'annoy'
     print(f"fetched {len(matches)} results in {str(time.perf_counter() - start_time)[:5]} seconds.", end='\n\n')
     for match in matches: print(str(match[0])[:5], match[1], sep='\t')
 
