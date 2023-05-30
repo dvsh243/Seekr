@@ -49,6 +49,10 @@ def search(maxLimit):
 
 test = [100, 500 ,1000, 5000, 10000, 15000, 20000, 30000, 50000]
 results = []  # (testVectors, (linearSearchTime, vectorizeTime))
+# for k means -> linearSearchTime / number of k means centers
+# for annoy -> log base 2 of (linearSearchTime)
+
+# need to calculate index creation time for annoy and kmeans
 
 for maxLimit in test:
     print(f"\nselecting maxLimit --> {maxLimit}")
