@@ -4,7 +4,7 @@ import time
 seekr = Seekr()
 index_type = 'kmeans'
 
-seekr.load_from_db('companies', 'data/companies.sqlite', column = 1)
+seekr.load_from_db('companies', 'data/companies.sqlite', column = 1, maxLimit = 10000)
 seekr.create_index(index_type)  # 'kmeans' or 'annoy'
 
 

@@ -16,11 +16,10 @@ class Seekr:
         self.index = None
 
 
-    def load_from_db(self, db_name: str, location: str, column: int) -> None:
+    def load_from_db(self, db_name: str, location: str, column: int, maxLimit: int = 10000) -> None:
         start_time = time.perf_counter()
         
-        self.db = DB(db_name, location, 10000)
-        # self.corpus = [cleanDocument(x[column]) for x in self.db.rows]
+        self.db = DB(db_name, location, maxLimit)
 
         for x in self.db.rows:
             if len(x[column]) < 3: continue
