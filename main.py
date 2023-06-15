@@ -1,10 +1,10 @@
 from seekr import Seekr
 import time
 
-seekr = Seekr()
-index_type = input("-> enter an index type (linear/kmeans/annoy) : ")
+index_type = input("-> enter an index type (kmeans/annoy) : ")
 maxLimit = int( input("-> enter number of documents : ") )
 
+seekr = Seekr()
 seekr.load_from_db('companies', 'data/companies.sqlite', column = 1, maxLimit = maxLimit)
 seekr.create_index(index_type)  # 'kmeans' or 'annoy'
 
