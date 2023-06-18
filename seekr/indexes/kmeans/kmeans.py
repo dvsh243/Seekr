@@ -44,7 +44,7 @@ class KMeans:
             self.children_index[center_index].append(vector_index)
         
         # print("centers' children assigned")
-        print( "children sizes ->", {center_index: len(vectors) for center_index, vectors in self.children.items()} )
+        # print( "children sizes ->", {center_index: len(vectors) for center_index, vectors in self.children.items()} )
         print(f"children assigned in {str(time.perf_counter() - start_time)[:5]} seconds.")
 
         # calculating standard deviation
@@ -57,7 +57,7 @@ class KMeans:
             sd += math.pow(len(vectors) - avg, 2)
         sd = math.sqrt(sd / len(self.children))
 
-        print(f"standard deviation -> {int(sd)}", end='\n\n')
+        # print(f"standard deviation -> {int(sd)}", end='\n\n')
 
 
     def compute_averages(self):
